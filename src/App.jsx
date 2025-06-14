@@ -136,7 +136,87 @@ export default function App() {
         <h1 className="text-2xl font-bold mb-2">Axis Yacht Charters</h1>
         <p className="text-lg italic">Free to Explore</p>
       </div>
-      {/* ...rest of the UI components... */}
+
+      <div>
+        <label className="block font-semibold mb-1">Choose a Boat:</label>
+        <select value={boat} onChange={(e) => setBoat(e.target.value)} className={inputClass}>
+          <option value="">Choose</option>
+          <option value="Axopar">Axopar 37XC 11.7 Meter (w/Captain)</option>
+          <option value="5m">5 Meter 30HP (50HP) Boat Rental</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block font-semibold mb-1">Booking Type:</label>
+        <select value={bookingType} onChange={(e) => setBookingType(e.target.value)} className={inputClass}>
+          <option value="">Select</option>
+          <option value="Full Day Charter">Full Day Charter</option>
+          <option value="Half Day Charter">Half Day Charter</option>
+          <option value="Transfer">Transfer</option>
+        </select>
+      </div>
+
+      {showTransferFields && (
+        <div className="grid sm:grid-cols-2 gap-4">
+          <input placeholder="Transfer From" value={info.transferFrom} onChange={(e) => setInfo({ ...info, transferFrom: e.target.value })} className={inputClass} />
+          <input placeholder="Transfer To" value={info.transferTo} onChange={(e) => setInfo({ ...info, transferTo: e.target.value })} className={inputClass} />
+        </div>
+      )}
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block font-semibold mb-1">Select Date:</label>
+          <DatePicker selected={date} onChange={setDate} minDate={today} className={inputClass} />
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Select Time:</label>
+          <select value={time} onChange={(e) => setTime(e.target.value)} className={inputClass}>
+            <option value="">Select Time</option>
+            {generateTimeOptions().map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block font-semibold mb-1">Passengers:</label>
+          <select value={passengers} onChange={(e) => setPassengers(e.target.value)} className={inputClass}>
+            {generatePassengerOptions()}
+          </select>
+        </div>
+        {showCaptain && (
+          <div>
+            <label className="block font-semibold mb-1">Captain:</label>
+            <select value={captain} onChange={(e) => setCaptain(e.target.value)} className={inputClass}>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+        )}
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <input placeholder="Full Name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} className={inputClass} />
+        <input placeholder="Phone" value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className={inputClass} />
+        <input placeholder="Email" value={info.email} onChange={(e) => setInfo({ ...info, email: e.target.value })} className={inputClass} />
+        <input placeholder="Country" value={info.country} onChange={(e) => setInfo({ ...info, country: e.target.value })} className={inputClass} />
+        <input placeholder="Address" value={info.address} onChange={(e) => setInfo({ ...info, address: e.target.value })} className={inputClass} />
+        <input placeholder="City" value={info.city} onChange={(e) => setInfo({ ...info, city: e.target.value })} className={inputClass} />
+        <input placeholder="State" value={info.state} onChange={(e) => setInfo({ ...info, state: e.target.value })} className={inputClass} />
+        <input placeholder="ZIP" value={info.zip} onChange={(e) => setInfo({ ...info, zip: e.target.value })} className={inputClass} />
+      </div>
+
+      <div>
+        <p className="font-semibold">Price Summary:</p>
+        <p>{getPriceSummary()}</p>
+        <p>Transfer: {bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"}</p>
+      </div>
+
+      <button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+        Submit Booking
+      </button>
     </div>
   );
 }
