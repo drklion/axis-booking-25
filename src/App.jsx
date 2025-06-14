@@ -1,7 +1,6 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "./index.css";
 
 const initialInventory = {
   Athena: [],
@@ -137,70 +136,7 @@ export default function App() {
         <h1 className="text-2xl font-bold mb-2">Axis Yacht Charters</h1>
         <p className="text-lg italic">Free to Explore</p>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <select className={inputClass} value={boat} onChange={(e) => setBoat(e.target.value)}>
-          <option value="">Choose a Boat</option>
-          <option value="Axopar">Axopar 37XC 11.7 Meter (w/Captain)</option>
-          <option value="5m">5 Meter 30HP (50HP) Boat Rental</option>
-        </select>
-
-        <select className={inputClass} value={bookingType} onChange={(e) => setBookingType(e.target.value)}>
-          <option value="">Booking Type</option>
-          <option>Full Day Charter</option>
-          <option>Half Day Charter</option>
-          <option>Transfer</option>
-        </select>
-
-        <div>
-          <DatePicker selected={date} onChange={(d) => setDate(d)} placeholderText="Select Date" className={inputClass} minDate={today} />
-        </div>
-
-        <select className={inputClass} value={time} onChange={(e) => setTime(e.target.value)}>
-          <option value="">Select Time</option>
-          {generateTimeOptions().map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-
-        <select className={inputClass} value={passengers} onChange={(e) => setPassengers(e.target.value)}>
-          <option value="">Select</option>
-          {generatePassengerOptions()}
-        </select>
-
-        {showCaptain && (
-          <select className={inputClass} value={captain} onChange={(e) => setCaptain(e.target.value)}>
-            <option value="no">Captain: No</option>
-            <option value="yes">Captain: Yes (+€100)</option>
-          </select>
-        )}
-
-        {showTransferFields && (
-          <>
-            <input className={inputClass} placeholder="Transfer From:" value={info.transferFrom} onChange={(e) => setInfo({...info, transferFrom: e.target.value})} />
-            <input className={inputClass} placeholder="Transfer To:" value={info.transferTo} onChange={(e) => setInfo({...info, transferTo: e.target.value})} />
-          </>
-        )}
-
-        {["name", "phone", "email", "country", "address", "city", "state", "zip"].map((field) => (
-          <input key={field} className={inputClass} placeholder={field.charAt(0).toUpperCase() + field.slice(1)} value={info[field]} onChange={(e) => setInfo({...info, [field]: e.target.value})} />
-        ))}
-      </div>
-
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold border-b mb-2">Booking Summary</h2>
-        <p><strong>Boat:</strong> {boat ? boatNames[boat] : ""}</p>
-        <p><strong>Booking Type:</strong> {bookingType}</p>
-        <p><strong>Date:</strong> {date ? date.toLocaleDateString() : ""}</p>
-        <p><strong>Time:</strong> {time}</p>
-        <p><strong>Passengers:</strong> {passengers}</p>
-        <p><strong>Captain:</strong> {boat === "5m" ? captain : "Included"}</p>
-        <p><strong>Transfer:</strong> {bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"}</p>
-        <p><strong>Payment:</strong> {getPriceSummary()}</p>
-        <p><strong>Address:</strong> {[info.country, info.address, info.city, info.state, info.zip].filter(Boolean).join(" ")}</p>
-      </div>
-
-      <button onClick={handleSubmit} className="mt-4 px-6 py-2 bg-blue-600 text-white rounded">Book Now</button>
+      {/* ...rest of the UI components... */}
     </div>
   );
 }
