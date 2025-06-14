@@ -133,8 +133,10 @@ export default function App() {
 
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold mb-4">Axis Yacht Charters</h1>
-      <p className="mb-4 text-lg italic">Free to Explore</p>
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-2">Axis Yacht Charters</h1>
+        <p className="text-lg italic">Free to Explore</p>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <select className={inputClass} value={boat} onChange={(e) => setBoat(e.target.value)}>
