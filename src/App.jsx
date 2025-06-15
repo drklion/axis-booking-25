@@ -190,6 +190,22 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       {/* no changes below this point unless requested */}
 
       <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block font-semibold mb-1">Select Date:</label>
+          <DatePicker selected={date} onChange={setDate} minDate={today} className={inputClass} />
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Select Time:</label>
+          <select value={time} onChange={(e) => setTime(e.target.value)} className={inputClass}>
+            <option value="">Select Time</option>
+            {generateTimeOptions().map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
         <input placeholder="Full Name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} className={inputClass} />
         <input placeholder="Phone" value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className={inputClass} />
         <input placeholder="Email" value={info.email} onChange={(e) => setInfo({ ...info, email: e.target.value })} className={inputClass} />
