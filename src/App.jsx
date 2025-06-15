@@ -52,6 +52,24 @@ export default function App() {
         return null;
       }
     }
+    if (boat === "5m") {
+      const duration = bookingType === "Full Day Charter" ? 8 : 4;
+      const [hour, min] = time.split(":" ).map(Number);
+      const start = hour * 60 + min;
+      const availableBoat = Object.keys(inventory).find(name => isTimeSlotAvailable(name, start, duration));
+
+      if (availableBoat) {
+        const newEnd = start + duration * 60;
+        setInventory(prev => ({
+          ...prev,
+          [availableBoat]: [...prev[availableBoat], [start, newEnd]]
+        }));
+        return availableBoat;
+      } else {
+        alert("No available 5m boats at that time.");
+        return null;
+      }
+    }
     return null;
   };
 
@@ -59,6 +77,8 @@ export default function App() {
     if (!boat) return "";
     if (bookingType === "Transfer") return "Contact for further info";
     const month = date ? new Date(date).getMonth() : null;
+
+    
 
     if (boat === "Axopar25") {
       let basePrice = 0;
@@ -82,10 +102,19 @@ export default function App() {
       if (captain === "yes") basePrice += 100;
       return `€${basePrice} (€40 Fixed Deposit)`;
     }
-
+    
+    if (bookingType === "Transfer") return "Contact for further info";
     if (boat === "Axopar") {
-      if (bookingType === "Full Day Charter") return "€1,450 (30% = €435)";
-      if (bookingType === "Half Day Charter") return "€1,100 (30% = €330)";
+    if (bookingType === "Full Day Charter") return "€1,450 (30% = €435)";
+    if (bookingType === "Half Day Charter") return "€1,100 (30% = €330)";
+  }
+    if (boat === "5m") {
+      let month = date ? new Date(date).getMonth() : null;
+      let basePrice = 110;
+      if (month === 6) basePrice = 120;
+      else if (month === 7) basePrice = 130;
+      if (captain === "yes") basePrice += 100;
+      return `€${basePrice} (€40 Fixed Deposit)`;
     }
     return "";
   };
@@ -96,7 +125,7 @@ Booking Type: ${bookingType}
 Date: ${date ? date.toLocaleDateString() : ""}
 Time: ${time}
 Passengers: ${passengers}
-Captain: ${(boat === "5m" || boat === "Axopar25") ? captain : "Included"}
+Captain: ${boat === "5m" ? captain : "Included"}
 Departure: ${boat === "Axopar" ? departure : "N/A"}
 Payment: ${getPriceSummary()}
 Transfer: ${bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"}
@@ -121,7 +150,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
 
   const handleSubmit = () => {
     const assignedBoat = handleBooking();
-    if (!assignedBoat && (boat === "5m" || boat === "Axopar25")) return;
+    if (!assignedBoat && boat === "5m") return;
 
     sendEmail();
     alert("Booking submitted. Stripe will open in a new tab.");
@@ -131,8 +160,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       else if (bookingType === "Half Day Charter") window.open("https://buy.stripe.com/eVq4gygrH4r25Cig51ak004", "_blank");
     } else if (boat === "5m") {
       window.open("https://buy.stripe.com/6oU9AS0sJcXy3ua9GDak005", "_blank");
-    } else if (boat === "Axopar25") {
-      window.open("https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006", "_blank");
     }
   };
 
@@ -162,7 +189,90 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
 
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-4">
-      {/* ... other elements remain the same ... */}
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-2">Axis Yacht Charters</h1>
+        <p className="text-lg italic">Free to Explore</p>
+      </div>
+
+      <div>
+        <label className="block font-semibold mb-1">Choose a Boat:</label>
+        <select value={boat} onChange={(e) => setBoat(e.target.value)} className={inputClass}>
+          <option value="">Choose</option>
+          <option value="Axopar">Axopar 37XC 11.7 Meter (w/Captain)</option>
+          <option value="Axopar25">Axopar 25 T-Top</option>
+          <option value="5m">5 Meter 30HP (50HP) Boat Rental</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block font-semibold mb-1">Booking Type:</label>
+        <select value={bookingType} onChange={(e) => setBookingType(e.target.value)} className={inputClass}>
+          <option value="">Select</option>
+          <option value="Full Day Charter">Full Day Charter</option>
+          <option value="Half Day Charter">Half Day Charter</option>
+          <option value="Transfer">Transfer</option>
+        </select>
+      </div>
+
+      {boat === "Axopar" && (
+        <div>
+          <label className="block font-semibold mb-1">Departure Point:</label>
+          <select value={departure} onChange={(e) => setDeparture(e.target.value)} className={inputClass}>
+            <option value="">Select departure point</option>
+            <option value="Loutraki, Skopelos">Loutraki, Skopelos</option>
+            <option value="Skopelos Town">Skopelos Town</option>
+            <option value="Skiathos">Skiathos</option>
+            <option value="Varkisa, Athens">Varkisa, Athens</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      )}
+
+      {showCaptain && (
+        <div>
+          <label className="block font-semibold mb-1">Captain:</label>
+          <select value={captain} onChange={(e) => setCaptain(e.target.value)} className={inputClass}>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+      )}
+
+      {showTransferFields && (
+        <div className="grid sm:grid-cols-2 gap-4">
+          <input placeholder="Transfer From" value={info.transferFrom} onChange={(e) => setInfo({ ...info, transferFrom: e.target.value })} className={inputClass} />
+          <input placeholder="Transfer To" value={info.transferTo} onChange={(e) => setInfo({ ...info, transferTo: e.target.value })} className={inputClass} />
+        </div>
+      )}
+
+      {/* no changes below this point unless requested */}
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block font-semibold mb-1">Select Date:</label>
+          <DatePicker selected={date} onChange={setDate} minDate={today} className={inputClass} />
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Select Time:</label>
+          <select value={time} onChange={(e) => setTime(e.target.value)} className={inputClass}>
+            <option value="">Select Time</option>
+            {generateTimeOptions().map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <input placeholder="Full Name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} className={inputClass} />
+        <input placeholder="Phone" value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className={inputClass} />
+        <input placeholder="Email" value={info.email} onChange={(e) => setInfo({ ...info, email: e.target.value })} className={inputClass} />
+        <input placeholder="Country" value={info.country} onChange={(e) => setInfo({ ...info, country: e.target.value })} className={inputClass} />
+        <input placeholder="Address" value={info.address} onChange={(e) => setInfo({ ...info, address: e.target.value })} className={inputClass} />
+        <input placeholder="City" value={info.city} onChange={(e) => setInfo({ ...info, city: e.target.value })} className={inputClass} />
+        <input placeholder="State" value={info.state} onChange={(e) => setInfo({ ...info, state: e.target.value })} className={inputClass} />
+        <input placeholder="ZIP" value={info.zip} onChange={(e) => setInfo({ ...info, zip: e.target.value })} className={inputClass} />
+      </div>
 
       <div className="border-t pt-4">
         <p className="font-semibold text-lg mb-2">Booking Summary</p>
@@ -175,7 +285,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
           {date && <li><strong>Date:</strong> {date.toLocaleDateString()}</li>}
           {time && <li><strong>Time:</strong> {time}</li>}
           {passengers && <li><strong>Passengers:</strong> {passengers}</li>}
-          {(boat === "5m" || boat === "Axopar25") && <li><strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}</li>}
+          {boat === "5m" && <li><strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}</li>}
           {bookingType === "Transfer" && (
             <li><strong>Transfer:</strong> From {info.transferFrom} to {info.transferTo}</li>
           )}
@@ -183,7 +293,17 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </ul>
       </div>
 
-      {/* ... submit button remains the same ... */}
+      <button
+        onClick={() => {
+          if (!info.name || !info.phone || !info.email) {
+            alert("Please fill in your full name, phone, and email before submitting.");
+            return;
+          }
+          handleSubmit();
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+        Submit Booking
+      </button>
     </div>
   );
 }
