@@ -23,6 +23,7 @@ export default function App() {
 
   const boatNames = {
     Axopar: "Axopar 37XC 11.7 Meter (w/Captain)",
+    Axopar25: "Axopar 25 T-Top",
     "5m": "5 Meter 30HP (50HP) Boat Rental"
   };
 
@@ -33,6 +34,24 @@ export default function App() {
   };
 
   const handleBooking = () => {
+    if (boat === "5m" || boat === "Axopar25") {
+      const duration = bookingType === "Full Day Charter" ? 8 : 4;
+      const [hour, min] = time.split(":" ).map(Number);
+      const start = hour * 60 + min;
+      const availableBoat = Object.keys(inventory).find(name => isTimeSlotAvailable(name, start, duration));
+
+      if (availableBoat) {
+        const newEnd = start + duration * 60;
+        setInventory(prev => ({
+          ...prev,
+          [availableBoat]: [...prev[availableBoat], [start, newEnd]]
+        }));
+        return availableBoat;
+      } else {
+        alert("No available boats at that time.");
+        return null;
+      }
+    }
     if (boat === "5m") {
       const duration = bookingType === "Full Day Charter" ? 8 : 4;
       const [hour, min] = time.split(":" ).map(Number);
@@ -55,6 +74,40 @@ export default function App() {
   };
 
   const getPriceSummary = () => {
+    if (!boat) return "";
+    if (bookingType === "Transfer") return "Contact for further info";
+    const month = date ? new Date(date).getMonth() : null;
+
+    if (boat === "Axopar") {
+      if (bookingType === "Full Day Charter") window.open("https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003", "_blank");
+      else if (bookingType === "Half Day Charter") window.open("https://buy.stripe.com/eVq4gygrH4r25Cig51ak004", "_blank");
+    } else if (boat === "Axopar25") {
+      window.open("https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006", "_blank");
+    }
+
+    if (boat === "Axopar25") {
+      let basePrice = 0;
+      if (bookingType === "Full Day Charter") {
+        if (month === 5) basePrice = 250;
+        else if (month === 6) basePrice = 300;
+        else if (month === 7) basePrice = 350;
+      } else if (bookingType === "Half Day Charter") {
+        if (month === 5) basePrice = 200;
+        else if (month === 6) basePrice = 250;
+        else if (month === 7) basePrice = 300;
+      }
+      if (captain === "yes") basePrice += 100;
+      return `€${basePrice} (€100 Fixed Deposit)`;
+    }
+
+    if (boat === "5m") {
+      let basePrice = 110;
+      if (month === 6) basePrice = 120;
+      else if (month === 7) basePrice = 130;
+      if (captain === "yes") basePrice += 100;
+      return `€${basePrice} (€40 Fixed Deposit)`;
+    }
+    return "";
     if (!boat) return "";
     if (bookingType === "Transfer") return "Contact for further info";
     if (boat === "Axopar") {
@@ -116,7 +169,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     }
   };
 
-  const showCaptain = boat === "5m";
+  const showCaptain = boat === "5m" || boat === "Axopar25";
   const showTransferFields = bookingType === "Transfer";
   const maxPassengers = boat === "Axopar" ? 8 : boat === "5m" ? 5 : "";
   const inputClass = "p-2 border rounded w-full";
@@ -152,6 +205,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         <select value={boat} onChange={(e) => setBoat(e.target.value)} className={inputClass}>
           <option value="">Choose</option>
           <option value="Axopar">Axopar 37XC 11.7 Meter (w/Captain)</option>
+          <option value="Axopar25">Axopar 25 T-Top</option>
           <option value="5m">5 Meter 30HP (50HP) Boat Rental</option>
         </select>
       </div>
