@@ -173,7 +173,8 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
             <option value="">Select departure point</option>
             <option value="Loutraki, Skopelos">Loutraki, Skopelos</option>
             <option value="Skopelos Town">Skopelos Town</option>
-            <option value="Varkisa">Varkisa</option>
+            <option value="Skiathos">Skiathos</option>
+            <option value="Varkisa, Athens">Varkisa, Athens</option>
             <option value="Other">Other</option>
           </select>
         </div>
