@@ -78,12 +78,7 @@ export default function App() {
     if (bookingType === "Transfer") return "Contact for further info";
     const month = date ? new Date(date).getMonth() : null;
 
-    if (boat === "Axopar") {
-      if (bookingType === "Full Day Charter") window.open("https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003", "_blank");
-      else if (bookingType === "Half Day Charter") window.open("https://buy.stripe.com/eVq4gygrH4r25Cig51ak004", "_blank");
-    } else if (boat === "Axopar25") {
-      window.open("https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006", "_blank");
-    }
+    
 
     if (boat === "Axopar25") {
       let basePrice = 0;
@@ -230,6 +225,16 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
             <option value="Skiathos">Skiathos</option>
             <option value="Varkisa, Athens">Varkisa, Athens</option>
             <option value="Other">Other</option>
+          </select>
+        </div>
+      )}
+
+      {showCaptain && (
+        <div>
+          <label className="block font-semibold mb-1">Captain:</label>
+          <select value={captain} onChange={(e) => setCaptain(e.target.value)} className={inputClass}>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
           </select>
         </div>
       )}
