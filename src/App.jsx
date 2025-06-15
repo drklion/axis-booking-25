@@ -208,12 +208,22 @@ export default function App() {
         <input placeholder="ZIP" value={info.zip} onChange={(e) => setInfo({ ...info, zip: e.target.value })} className={inputClass} />
       </div>
 
-      <div>
-        <p className="font-semibold">Price Summary:</p>
-        <p>{getPriceSummary()}</p>
-        <p>Transfer: {bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"}</p>
-      </div>
-
+     <div className="border-t pt-4">
+  <p className="font-semibold text-lg mb-2">Booking Summary</p>
+  <ul className="space-y-1">
+    {boat && <li><strong>Boat:</strong> {boatNames[boat]}</li>}
+    {bookingType && <li><strong>Booking Type:</strong> {bookingType}</li>}
+    {date && <li><strong>Date:</strong> {date.toLocaleDateString()}</li>}
+    {time && <li><strong>Time:</strong> {time}</li>}
+    {passengers && <li><strong>Passengers:</strong> {passengers}</li>}
+    {boat === "5m" && <li><strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}</li>}
+    {bookingType === "Transfer" && (
+      <li><strong>Transfer:</strong> From {info.transferFrom} to {info.transferTo}</li>
+    )}
+    <li><strong>Payment:</strong> {getPriceSummary()}</li>
+  </ul>
+       
+</div>
       <button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Submit Booking
       </button>
