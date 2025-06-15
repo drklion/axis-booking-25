@@ -78,8 +78,6 @@ export default function App() {
     if (bookingType === "Transfer") return "Contact for further info";
     const month = date ? new Date(date).getMonth() : null;
 
-    
-
     if (boat === "Axopar25") {
       let basePrice = 0;
       if (bookingType === "Full Day Charter") {
@@ -102,20 +100,13 @@ export default function App() {
       if (captain === "yes") basePrice += 100;
       return `€${basePrice} (€40 Fixed Deposit)`;
     }
-    
+
     if (bookingType === "Transfer") return "Contact for further info";
     if (boat === "Axopar") {
-    if (bookingType === "Full Day Charter") return "€1,450 (30% = €435)";
-    if (bookingType === "Half Day Charter") return "€1,100 (30% = €330)";
-  }
-    if (boat === "5m") {
-      let month = date ? new Date(date).getMonth() : null;
-      let basePrice = 110;
-      if (month === 6) basePrice = 120;
-      else if (month === 7) basePrice = 130;
-      if (captain === "yes") basePrice += 100;
-      return `€${basePrice} (€40 Fixed Deposit)`;
+      if (bookingType === "Full Day Charter") return "€1,450 (30% = €435)";
+      if (bookingType === "Half Day Charter") return "€1,100 (30% = €330)";
     }
+
     return "";
   };
 
@@ -125,7 +116,7 @@ Booking Type: ${bookingType}
 Date: ${date ? date.toLocaleDateString() : ""}
 Time: ${time}
 Passengers: ${passengers}
-Captain: ${boat === "5m" ? captain : "Included"}
+Captain: ${showCaptain ? (captain === "yes" ? "Yes" : "No") : "Included"}
 Departure: ${boat === "Axopar" ? departure : "N/A"}
 Payment: ${getPriceSummary()}
 Transfer: ${bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"}
@@ -160,6 +151,8 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       else if (bookingType === "Half Day Charter") window.open("https://buy.stripe.com/eVq4gygrH4r25Cig51ak004", "_blank");
     } else if (boat === "5m") {
       window.open("https://buy.stripe.com/6oU9AS0sJcXy3ua9GDak005", "_blank");
+    } else if (boat === "Axopar25") {
+      window.open("https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006", "_blank");
     }
   };
 
@@ -245,8 +238,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       )}
 
-      {/* no changes below this point unless requested */}
-
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block font-semibold mb-1">Select Date:</label>
@@ -285,7 +276,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
           {date && <li><strong>Date:</strong> {date.toLocaleDateString()}</li>}
           {time && <li><strong>Time:</strong> {time}</li>}
           {passengers && <li><strong>Passengers:</strong> {passengers}</li>}
-          {boat === "5m" && <li><strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}</li>}
+          {showCaptain && <li><strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}</li>}
           {bookingType === "Transfer" && (
             <li><strong>Transfer:</strong> From {info.transferFrom} to {info.transferTo}</li>
           )}
