@@ -218,10 +218,17 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </ul>
       </div>
 
-      <button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+      <button
+        onClick={() => {
+          if (!info.name || !info.phone || !info.email) {
+            alert("Please fill in your full name, phone, and email before submitting.");
+            return;
+          }
+          handleSubmit();
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Submit Booking
       </button>
     </div>
   );
 }
-
