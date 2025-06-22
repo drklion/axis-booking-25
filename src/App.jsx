@@ -52,24 +52,6 @@ export default function App() {
         return null;
       }
     }
-    if (boat === "5m") {
-      const duration = bookingType === "Full Day Charter" ? 8 : 4;
-      const [hour, min] = time.split(":" ).map(Number);
-      const start = hour * 60 + min;
-      const availableBoat = Object.keys(inventory).find(name => isTimeSlotAvailable(name, start, duration));
-
-      if (availableBoat) {
-        const newEnd = start + duration * 60;
-        setInventory(prev => ({
-          ...prev,
-          [availableBoat]: [...prev[availableBoat], [start, newEnd]]
-        }));
-        return availableBoat;
-      } else {
-        alert("No available 5m boats at that time.");
-        return null;
-      }
-    }
     return null;
   };
 
@@ -101,7 +83,6 @@ export default function App() {
       return `€${basePrice} (€40 Fixed Deposit)`;
     }
 
-    if (bookingType === "Transfer") return "Contact for further info";
     if (boat === "Axopar") {
       if (bookingType === "Full Day Charter") return "€1,450 (30% = €435)";
       if (bookingType === "Half Day Charter") return "€1,100 (30% = €330)";
@@ -140,8 +121,13 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   };
 
   const handleSubmit = () => {
+    if (!info.name || !info.phone || !info.email) {
+      alert("Please fill in your full name, phone, and email before submitting.");
+      return;
+    }
+
     const assignedBoat = handleBooking();
-    if (!assignedBoat && boat === "5m") return;
+    if (!assignedBoat && (boat === "5m" || boat === "Axopar25")) return;
 
     sendEmail();
     alert("Booking submitted. Stripe will open in a new tab.");
@@ -255,6 +241,15 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block font-semibold mb-1">Passengers:</label>
+          <select value={passengers} onChange={(e) => setPassengers(e.target.value)} className={inputClass}>
+            {generatePassengerOptions()}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
         <input placeholder="Full Name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} className={inputClass} />
         <input placeholder="Phone" value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className={inputClass} />
         <input placeholder="Email" value={info.email} onChange={(e) => setInfo({ ...info, email: e.target.value })} className={inputClass} />
@@ -285,13 +280,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       </div>
 
       <button
-        onClick={() => {
-          if (!info.name || !info.phone || !info.email) {
-            alert("Please fill in your full name, phone, and email before submitting.");
-            return;
-          }
-          handleSubmit();
-        }}
+        onClick={handleSubmit}
         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Submit Booking
       </button>
