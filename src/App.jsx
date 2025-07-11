@@ -63,13 +63,13 @@ export default function App() {
     if (boat === "Axopar25") {
       let basePrice = 0;
       if (bookingType === "Full Day Charter") {
+        if (month === 5) basePrice = 300;
+        else if (month === 6) basePrice = 350;
+        else if (month === 7) basePrice = 400;
+      } else if (bookingType === "Half Day Charter") {
         if (month === 5) basePrice = 250;
         else if (month === 6) basePrice = 300;
         else if (month === 7) basePrice = 350;
-      } else if (bookingType === "Half Day Charter") {
-        if (month === 5) basePrice = 200;
-        else if (month === 6) basePrice = 250;
-        else if (month === 7) basePrice = 300;
       }
       if (captain === "yes") basePrice += 100;
       return `€${basePrice} (€100 Fixed Deposit)`;
