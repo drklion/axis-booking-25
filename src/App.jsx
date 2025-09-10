@@ -77,12 +77,14 @@ export default function App() {
 
     if (boat === "BlueWater170") {
       let basePrice = 110;
-      if (month === 6) basePrice = 120;
-      else if (month === 7) basePrice = 130;
+      if (bookingType === "Full Day Charter") {
+        if (month === 5) basePrice = 110;
+        else if (month === 6) basePrice = 120;
+        else if (month === 7) basePrice = 130;
        } else if (bookingType === "Half Day Charter") {
-        if (month === 5) basePrice = 200;
-        else if (month === 6) basePrice = 225;
-        else if (month === 7) basePrice = 250;
+        if (month === 5) basePrice = 90;
+        else if (month === 6) basePrice = 100;
+        else if (month === 7) basePrice = 110;
       if (captain === "yes") basePrice += 100;
       return `€${basePrice} (€50 Fixed Deposit)`;
     }
