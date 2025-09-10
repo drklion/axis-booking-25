@@ -23,7 +23,7 @@ export default function App() {
 
   const boatNames = {
     Axopar: "Axopar 37XC 11.7 Meter (w/Captain)",
-    Axopar25: "Axopar 25 T-Top",
+    Axopar22: "Axopar 22 T-Top",
     "5m": "5 Meter 30HP (50HP) Boat Rental"
   };
 
@@ -34,7 +34,7 @@ export default function App() {
   };
 
   const handleBooking = () => {
-    if (boat === "5m" || boat === "Axopar25") {
+    if (boat === "5m" || boat === "Axopar22") {
       const duration = bookingType === "Full Day Charter" ? 8 : 4;
       const [hour, min] = time.split(":" ).map(Number);
       const start = hour * 60 + min;
@@ -60,7 +60,7 @@ export default function App() {
     if (bookingType === "Transfer") return "Contact for further info";
     const month = date ? new Date(date).getMonth() : null;
 
-    if (boat === "Axopar25") {
+    if (boat === "Axopar22") {
       let basePrice = 0;
       if (bookingType === "Full Day Charter") {
         if (month === 5) basePrice = 300;
@@ -127,7 +127,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     }
 
     const assignedBoat = handleBooking();
-    if (!assignedBoat && (boat === "5m" || boat === "Axopar25")) return;
+    if (!assignedBoat && (boat === "5m" || boat === "Axopar22")) return;
 
     sendEmail();
     alert("Booking submitted. Stripe will open in a new tab.");
@@ -137,12 +137,12 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       else if (bookingType === "Half Day Charter") window.open("https://buy.stripe.com/eVq4gygrH4r25Cig51ak004", "_blank");
     } else if (boat === "5m") {
       window.open("https://buy.stripe.com/6oU9AS0sJcXy3ua9GDak005", "_blank");
-    } else if (boat === "Axopar25") {
+    } else if (boat === "Axopar22") {
       window.open("https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006", "_blank");
     }
   };
 
-  const showCaptain = boat === "5m" || boat === "Axopar25";
+  const showCaptain = boat === "5m" || boat === "Axopar22";
   const showTransferFields = bookingType === "Transfer";
   const maxPassengers = boat === "Axopar" ? 8 : boat === "5m" ? 5 : "";
   const inputClass = "p-2 border rounded w-full";
@@ -178,7 +178,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         <select value={boat} onChange={(e) => setBoat(e.target.value)} className={inputClass}>
           <option value="">Choose</option>
           <option value="Axopar">Axopar 37XC 11.7 Meter (w/Captain)</option>
-          <option value="Axopar25">Axopar 25 T-Top</option>
+          <option value="Axopar22">Axopar 22 T-Top</option>
           <option value="5m">5 Meter 30HP (50HP) Boat Rental</option>
         </select>
       </div>
