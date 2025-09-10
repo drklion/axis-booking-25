@@ -24,7 +24,7 @@ export default function App() {
   const boatNames = {
     Axopar: "Axopar 37XC 11.7 Meter (w/Captain)",
     Axopar22: "Axopar 22 T-Top",
-    BlueWater170: "Blue Water 170 5 Meter Rental "
+    BlueWater170: "Blue Water 170 5 Meter Rental"
   };
 
   const isTimeSlotAvailable = (boatName, newStart, duration) => {
@@ -81,7 +81,7 @@ export default function App() {
         if (month === 5) basePrice = 110;
         else if (month === 6) basePrice = 120;
         else if (month === 7) basePrice = 130;
-       } else if (bookingType === "Half Day Charter") {
+      } else if (bookingType === "Half Day Charter") {
         if (month === 5) basePrice = 90;
         else if (month === 6) basePrice = 100;
         else if (month === 7) basePrice = 110;
