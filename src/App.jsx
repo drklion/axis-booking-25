@@ -17,7 +17,18 @@ export default function App() {
   const [passengers, setPassengers] = useState("1");
   const [captain, setCaptain] = useState("no");
   const [departure, setDeparture] = useState("");
-  const [info, setInfo] = useState({ name: "", phone: "", email: "", country: "", address: "", city: "", state: "", zip: "", transferFrom: "", transferTo: "" });
+  const [info, setInfo] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    country: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    transferFrom: "",
+    transferTo: ""
+  });
   const [inventory, setInventory] = useState(initialInventory);
 
   const boatNames = {
@@ -25,7 +36,6 @@ export default function App() {
     Axopar22: "Axopar 22 T-Top",
     BlueWater170: "Blue Water 170 5 Meter Rental"
   };
-
   const isTimeSlotAvailable = (boatName, newStart, duration) => {
     const bookings = inventory[boatName];
     const newEnd = newStart + duration * 60;
@@ -35,9 +45,11 @@ export default function App() {
   const handleBooking = () => {
     if (boat === "BlueWater170" || boat === "Axopar22") {
       const duration = bookingType === "Full Day Charter" ? 8 : 4;
-      const [hour, min] = time.split(":" ).map(Number);
+      const [hour, min] = time.split(":").map(Number);
       const start = hour * 60 + min;
-      const availableBoat = Object.keys(inventory).find(name => isTimeSlotAvailable(name, start, duration));
+      const availableBoat = Object.keys(inventory).find(name =>
+        isTimeSlotAvailable(name, start, duration)
+      );
 
       if (availableBoat) {
         const newEnd = start + duration * 60;
@@ -60,48 +72,29 @@ export default function App() {
     const month = date ? new Date(date).getMonth() : null;
 
     if (boat === "Axopar22") {
-  let basePrice = 0;
-  if (bookingType === "Full Day Charter") {
-    const monthlyPrices = [200, 200, 200, 225, 225, 275, 300, 325, 275, 200, 0, 0]; // Jan–Dec
-    basePrice = monthlyPrices[month];
-  } else if (bookingType === "Half Day Charter") {
-    const monthlyPrices = [150, 150, 150, 175, 200, 225, 250, 275, 200, 175, 0, 0]; // Jan–Dec
-    basePrice = monthlyPrices[month];
-  }
-
-  if (basePrice === 0) {
-    return "Unavailable this month";
-  }
-
-  if (captain === "yes") basePrice += 100;
-  return `€${basePrice} (€100 Fixed Deposit)`;
-}
+      const fullPrices = [200, 200, 200, 225, 225, 275, 350, 400, 275, 200, 0, 0]; // Jan–Dec
+      const halfPrices = [150, 150, 150, 175, 200, 225, 300, 350, 200, 175, 0, 0];
+      const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
+      if (basePrice === 0) return "Unavailable this month";
+      return `€${captain === "yes" ? basePrice + 100 : basePrice} (€100 Fixed Deposit)`;
+    }
 
     if (boat === "BlueWater170") {
-  let basePrice = 0;
-  if (bookingType === "Full Day Charter") {
-    const monthlyPrices = [80, 80, 80, 80, 90, 110, 120, 130, 110, 90, 0, 0]; // Jan–Dec
-    basePrice = monthlyPrices[month];
-  } else if (bookingType === "Half Day Charter") {
-    const monthlyPrices = [70, 70, 70, 70, 80, 100, 110, 120, 90, 80, 0, 0]; // Jan–Dec
-    basePrice = monthlyPrices[month];
-  }
-
-  if (basePrice === 0) {
-    return "Unavailable this month";
-  }
-  if (captain === "yes") basePrice += 100;
-  return `€${basePrice} (€50 Fixed Deposit)`;
-}
+      const fullPrices = [80, 80, 80, 80, 90, 110, 120, 130, 110, 90, 0, 0];
+      const halfPrices = [70, 70, 70, 70, 80, 100, 110, 120, 90, 80, 0, 0];
+      const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
+      if (basePrice === 0) return "Unavailable this month";
+      return `€${captain === "yes" ? basePrice + 100 : basePrice} (€50 Fixed Deposit)`;
+    }
 
     if (boat === "Axopar") {
-      if (bookingType === "Full Day Charter") return "€1,450 (30% = €435)";
-      if (bookingType === "Half Day Charter") return "€1,100 (30% = €330)";
+      return bookingType === "Full Day Charter"
+        ? "€1,450 (30% = €435)"
+        : "€1,100 (30% = €330)";
     }
 
     return "";
   };
-
   const sendEmail = () => {
     const summary = `Boat: ${boat ? boatNames[boat] : ""}
 Booking Type: ${bookingType}
@@ -126,9 +119,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         message: summary
       })
     })
-    .then(response => response.json())
-    .then(data => console.log("Email sent:", data))
-    .catch(error => console.error("Error sending email:", error));
+      .then(response => response.json())
+      .then(data => console.log("Email sent:", data))
+      .catch(error => console.error("Error sending email:", error));
   };
 
   const handleSubmit = () => {
@@ -143,19 +136,29 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     sendEmail();
     alert("Booking submitted. Stripe will open in a new tab.");
 
-    if (boat === "Axopar") {
-      if (bookingType === "Full Day Charter") window.open("https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003", "_blank");
-      else if (bookingType === "Half Day Charter") window.open("https://buy.stripe.com/eVq4gygrH4r25Cig51ak004", "_blank");
-    } else if (boat === "BlueWater170") {
-      window.open("https://buy.stripe.com/6oU9AS0sJcXy3ua9GDak005", "_blank");
-    } else if (boat === "Axopar22") {
-      window.open("https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006", "_blank");
+    const stripeLinks = {
+      Axopar: {
+        "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
+        "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
+      },
+      BlueWater170: {
+        any: "https://buy.stripe.com/6oU9AS0sJcXy3ua9GDak005"
+      },
+      Axopar22: {
+        any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006"
+      }
+    };
+
+    if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
+      window.open(stripeLinks[boat][bookingType], "_blank");
+    } else if (stripeLinks[boat] && stripeLinks[boat].any) {
+      window.open(stripeLinks[boat].any, "_blank");
     }
   };
-
   const showCaptain = boat === "BlueWater170" || boat === "Axopar22";
   const showTransferFields = bookingType === "Transfer";
   const maxPassengers = boat === "Axopar" ? 8 : boat === "BlueWater170" ? 6 : "";
+
   const inputClass = "p-2 border rounded w-full";
   const fullWidth = "w-full sm:w-[300px]";
 
@@ -184,6 +187,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         <p className="text-lg italic">Free to Explore</p>
       </div>
 
+      {/* Boat Selection */}
       <div>
         <label className="block font-semibold mb-1">Choose a Boat:</label>
         <select value={boat} onChange={(e) => setBoat(e.target.value)} className={inputClass}>
@@ -194,6 +198,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </select>
       </div>
 
+      {/* Booking Type */}
       <div>
         <label className="block font-semibold mb-1">Booking Type:</label>
         <select value={bookingType} onChange={(e) => setBookingType(e.target.value)} className={inputClass}>
@@ -204,6 +209,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </select>
       </div>
 
+      {/* Departure (Axopar only) */}
       {boat === "Axopar" && (
         <div>
           <label className="block font-semibold mb-1">Departure Point:</label>
@@ -218,6 +224,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       )}
 
+      {/* Captain Option (only BlueWater and Axopar22) */}
       {showCaptain && (
         <div>
           <label className="block font-semibold mb-1">Captain:</label>
@@ -228,6 +235,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       )}
 
+      {/* Transfer fields */}
       {showTransferFields && (
         <div className="grid sm:grid-cols-2 gap-4">
           <input placeholder="Transfer From" value={info.transferFrom} onChange={(e) => setInfo({ ...info, transferFrom: e.target.value })} className={inputClass} />
@@ -235,6 +243,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       )}
 
+      {/* Date + Time */}
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block font-semibold mb-1">Select Date:</label>
@@ -251,6 +260,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       </div>
 
+      {/* Passengers */}
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block font-semibold mb-1">Passengers:</label>
@@ -260,6 +270,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       </div>
 
+      {/* Contact Details */}
       <div className="grid sm:grid-cols-2 gap-4">
         <input placeholder="Full Name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} className={inputClass} />
         <input placeholder="Phone" value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className={inputClass} />
@@ -270,7 +281,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         <input placeholder="State" value={info.state} onChange={(e) => setInfo({ ...info, state: e.target.value })} className={inputClass} />
         <input placeholder="ZIP" value={info.zip} onChange={(e) => setInfo({ ...info, zip: e.target.value })} className={inputClass} />
       </div>
-
       <div className="border-t pt-4">
         <p className="font-semibold text-lg mb-2">Booking Summary</p>
         <ul className="space-y-1">
