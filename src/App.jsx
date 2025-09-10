@@ -79,6 +79,10 @@ export default function App() {
       let basePrice = 110;
       if (month === 6) basePrice = 120;
       else if (month === 7) basePrice = 130;
+       } else if (bookingType === "Half Day Charter") {
+        if (month === 5) basePrice = 200;
+        else if (month === 6) basePrice = 225;
+        else if (month === 7) basePrice = 250;
       if (captain === "yes") basePrice += 100;
       return `€${basePrice} (€50 Fixed Deposit)`;
     }
