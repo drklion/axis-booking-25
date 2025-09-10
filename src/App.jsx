@@ -76,18 +76,19 @@ export default function App() {
     }
 
     if (boat === "BlueWater170") {
-      let basePrice = 110;
-      if (bookingType === "Full Day Charter") {
-        if (month === 5) basePrice = 110;
-        else if (month === 6) basePrice = 120;
-        else if (month === 7) basePrice = 130;
-      } else if (bookingType === "Half Day Charter") {
-        if (month === 5) basePrice = 90;
-        else if (month === 6) basePrice = 100;
-        else if (month === 7) basePrice = 110;
-      if (captain === "yes") basePrice += 100;
-      return `€${basePrice} (€50 Fixed Deposit)`;
-    }
+  let basePrice = 110;
+  if (bookingType === "Full Day Charter") {
+    if (month === 5) basePrice = 110;
+    else if (month === 6) basePrice = 120;
+    else if (month === 7) basePrice = 130;
+  } else if (bookingType === "Half Day Charter") {
+    if (month === 5) basePrice = 90;
+    else if (month === 6) basePrice = 100;
+    else if (month === 7) basePrice = 110;
+  }
+  if (captain === "yes") basePrice += 100;
+  return `€${basePrice} (€50 Fixed Deposit)`;
+}
 
     if (boat === "Axopar") {
       if (bookingType === "Full Day Charter") return "€1,450 (30% = €435)";
@@ -133,7 +134,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     }
 
     const assignedBoat = handleBooking();
-    if (!assignedBoat && (boat === "5m" || boat === "Axopar22")) return;
+    if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
 
     sendEmail();
     alert("Booking submitted. Stripe will open in a new tab.");
@@ -141,7 +142,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     if (boat === "Axopar") {
       if (bookingType === "Full Day Charter") window.open("https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003", "_blank");
       else if (bookingType === "Half Day Charter") window.open("https://buy.stripe.com/eVq4gygrH4r25Cig51ak004", "_blank");
-    } else if (boat === "5m") {
+    } else if (boat === "BlueWater170") {
       window.open("https://buy.stripe.com/6oU9AS0sJcXy3ua9GDak005", "_blank");
     } else if (boat === "Axopar22") {
       window.open("https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006", "_blank");
