@@ -34,7 +34,7 @@ export default function App() {
   };
 
   const handleBooking = () => {
-    if (boat === "5m" || boat === "Axopar22") {
+    if (boat === "BlueWater170" || boat === "Axopar22") {
       const duration = bookingType === "Full Day Charter" ? 8 : 4;
       const [hour, min] = time.split(":" ).map(Number);
       const start = hour * 60 + min;
