@@ -61,19 +61,22 @@ export default function App() {
     const month = date ? new Date(date).getMonth() : null;
 
     if (boat === "Axopar22") {
-      let basePrice = 300;
-      if (bookingType === "Full Day Charter") {
-        if (month === 5) basePrice = 300;
-        else if (month === 6) basePrice = 350;
-        else if (month === 7) basePrice = 375;
-      } else if (bookingType === "Half Day Charter") {
-        if (month === 5) basePrice = 200;
-        else if (month === 6) basePrice = 225;
-        else if (month === 7) basePrice = 250;
-      }
-      if (captain === "yes") basePrice += 100;
-      return `€${basePrice} (€100 Fixed Deposit)`;
-    }
+  let basePrice = 0;
+  if (bookingType === "Full Day Charter") {
+    const monthlyPrices = [200, 200, 250, 250, 275, 300, 350, 375, 325, 300, 0, 0]; // Jan–Dec
+    basePrice = monthlyPrices[month];
+  } else if (bookingType === "Half Day Charter") {
+    const monthlyPrices = [150, 150, 180, 180, 200, 225, 300, 350, 275, 250, 0, 0]; // Jan–Dec
+    basePrice = monthlyPrices[month];
+  }
+
+  if (basePrice === 0) {
+    return "Unavailable this month";
+  }
+
+  if (captain === "yes") basePrice += 100;
+  return `€${basePrice} (€100 Fixed Deposit)`;
+}
 
     if (boat === "BlueWater170") {
   let basePrice = 110;
