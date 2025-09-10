@@ -61,7 +61,7 @@ export default function App() {
     const month = date ? new Date(date).getMonth() : null;
 
     if (boat === "Axopar22") {
-      let basePrice = 0;
+      let basePrice = 300;
       if (bookingType === "Full Day Charter") {
         if (month === 5) basePrice = 300;
         else if (month === 6) basePrice = 350;
