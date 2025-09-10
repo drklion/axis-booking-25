@@ -24,7 +24,7 @@ export default function App() {
   const boatNames = {
     Axopar: "Axopar 37XC 11.7 Meter (w/Captain)",
     Axopar22: "Axopar 22 T-Top",
-    "5m": "5 Meter 30HP (50HP) Boat Rental"
+    BlueWater170: "Blue Water 170 5 Meter Rental "
   };
 
   const isTimeSlotAvailable = (boatName, newStart, duration) => {
@@ -65,22 +65,22 @@ export default function App() {
       if (bookingType === "Full Day Charter") {
         if (month === 5) basePrice = 300;
         else if (month === 6) basePrice = 350;
-        else if (month === 7) basePrice = 400;
+        else if (month === 7) basePrice = 375;
       } else if (bookingType === "Half Day Charter") {
-        if (month === 5) basePrice = 250;
-        else if (month === 6) basePrice = 300;
-        else if (month === 7) basePrice = 350;
+        if (month === 5) basePrice = 200;
+        else if (month === 6) basePrice = 225;
+        else if (month === 7) basePrice = 250;
       }
       if (captain === "yes") basePrice += 100;
       return `€${basePrice} (€100 Fixed Deposit)`;
     }
 
-    if (boat === "5m") {
+    if (boat === "BlueWater170") {
       let basePrice = 110;
       if (month === 6) basePrice = 120;
       else if (month === 7) basePrice = 130;
       if (captain === "yes") basePrice += 100;
-      return `€${basePrice} (€40 Fixed Deposit)`;
+      return `€${basePrice} (€50 Fixed Deposit)`;
     }
 
     if (boat === "Axopar") {
@@ -142,9 +142,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     }
   };
 
-  const showCaptain = boat === "5m" || boat === "Axopar22";
+  const showCaptain = boat === "BlueWater170" || boat === "Axopar22";
   const showTransferFields = bookingType === "Transfer";
-  const maxPassengers = boat === "Axopar" ? 8 : boat === "5m" ? 5 : "";
+  const maxPassengers = boat === "Axopar" ? 8 : boat === "BlueWater170" ? 6 : "";
   const inputClass = "p-2 border rounded w-full";
   const fullWidth = "w-full sm:w-[300px]";
 
@@ -179,7 +179,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
           <option value="">Choose</option>
           <option value="Axopar">Axopar 37XC 11.7 Meter (w/Captain)</option>
           <option value="Axopar22">Axopar 22 T-Top</option>
-          <option value="5m">5 Meter 30HP (50HP) Boat Rental</option>
+          <option value="BlueWater170">5 Meter 30HP (50HP) Boat Rental</option>
         </select>
       </div>
 
