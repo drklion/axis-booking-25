@@ -304,10 +304,14 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   <label className="block font-semibold mb-2">Terms & Conditions</label>
   <div className="border h-40 overflow-y-scroll p-2 text-sm bg-gray-50 whitespace-pre-wrap">
     By booking, you agree to the following terms:
-    - A 48-hour notice is required for cancellations. No refund of deposit otherwise, unless weather prevents sailing.
-    - You are responsible for any damage caused during your rental. A €500 damage hold applies.
+
+    - You have read the full Terms & Conditions PDF available below.
+    - Cancellations must be made at least 48 hours in advance to receive a refund of your deposit.
+      No refund will be issued for cancellations made within 48 hours, unless cancellation is due to weather conditions.
+    - You are responsible for any damage caused during your rental.
+      A €500 damage hold will apply upon discovery of damage. Additional costs beyond €500 will be charged.
     - All charters are subject to safe weather and sea conditions.
-    - Axis Global Inc. holds no liability for accidents, death, or injuries sustained during rental or transfer.
+    - Axis Global Inc. is not liable for accidents, injuries, or loss of life during the rental or transfer.
     - Greek jurisdiction applies. Address: Elpidos 17, Varkiza, Greece 16672.
   </div>
   <div className="flex items-center mt-2 space-x-2">
@@ -324,17 +328,18 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     </label>
   </div>
   <div className="text-sm text-blue-600 mt-1">
-    <a href="/Axis_Global_Terms_and_Conditions.pdf" target="_blank" rel="noopener noreferrer" className="underline">
-  Download Full Terms PDF
-</a>
+    <a href="/Axis_Global_Charter_Terms_Full_Revised.pdf" target="_blank" rel="noopener noreferrer" className="underline">
+      Download Full Terms PDF
+    </a>
   </div>
 </div>
 
-      <button
-        onClick={handleSubmit}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-        Submit Booking
-      </button>
+{/* Submit Button */}
+<button
+  onClick={handleSubmit}
+  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+  Submit Booking
+</button>
     </div>
   );
 }
