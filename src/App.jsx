@@ -18,17 +18,19 @@ export default function App() {
   const [captain, setCaptain] = useState("no");
   const [departure, setDeparture] = useState("");
   const [info, setInfo] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    country: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
-    transferFrom: "",
-    transferTo: ""
-  });
+  name: "",
+  phone: "",
+  email: "",
+  country: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+  transferFrom: "",
+  transferTo: "",
+  agreed: false,
+  agreementTimestamp: ""
+});
   const [inventory, setInventory] = useState(initialInventory);
 
   const boatNames = {
