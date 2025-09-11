@@ -324,9 +324,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     </label>
   </div>
   <div className="text-sm text-blue-600 mt-1">
-    <a href="/terms.pdf" target="_blank" rel="noopener noreferrer" className="underline">
-      Download Full Terms PDF
-    </a>
+    <a href="/Axis_Global_Terms_and_Conditions.pdf" target="_blank" rel="noopener noreferrer" className="underline">
+  Download Full Terms PDF
+</a>
   </div>
 </div>
 
