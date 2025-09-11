@@ -299,6 +299,36 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
           <li><strong>Payment:</strong> {getPriceSummary()}</li>
         </ul>
       </div>
+      {/* Terms & Conditions */}
+<div className="border-t pt-4">
+  <label className="block font-semibold mb-2">Terms & Conditions</label>
+  <div className="border h-40 overflow-y-scroll p-2 text-sm bg-gray-50 whitespace-pre-wrap">
+    By booking, you agree to the following terms:
+    - A 48-hour notice is required for cancellations. No refund of deposit otherwise, unless weather prevents sailing.
+    - You are responsible for any damage caused during your rental. A €500 damage hold applies.
+    - All charters are subject to safe weather and sea conditions.
+    - Axis Global Inc. holds no liability for accidents, death, or injuries sustained during rental or transfer.
+    - Greek jurisdiction applies. Address: Elpidos 17, Varkiza, Greece 16672.
+  </div>
+  <div className="flex items-center mt-2 space-x-2">
+    <input
+      type="checkbox"
+      id="agree"
+      checked={info.agreed || false}
+      onChange={(e) => {
+        setInfo({ ...info, agreed: e.target.checked, agreementTimestamp: new Date().toISOString() });
+      }}
+    />
+    <label htmlFor="agree" className="text-sm">
+      I have read and agree to the Terms & Conditions.
+    </label>
+  </div>
+  <div className="text-sm text-blue-600 mt-1">
+    <a href="/terms.pdf" target="_blank" rel="noopener noreferrer" className="underline">
+      Download Full Terms PDF
+    </a>
+  </div>
+</div>
 
       <button
         onClick={handleSubmit}
