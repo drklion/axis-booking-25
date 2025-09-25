@@ -196,7 +196,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
           <option value="">Choose</option>
           <option value="Axopar">Axopar 37XC 11.7 Meter (w/Captain)</option>
           <option value="Axopar22">Axopar 22 T-Top</option>
-          <option value="BlueWater170">5 Meter 30HP (50HP) Boat Rental</option>
+          <option value="BlueWater170">Blue Axis 5 Meter Boat Rental</option>
         </select>
       </div>
 
