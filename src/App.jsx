@@ -144,7 +144,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
       },
       BlueWater170: {
-        any: "https://buy.stripe.com/6oU9AS0sJcXy3ua9GDak005"
+        any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007"
       },
       Axopar22: {
         any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006"
