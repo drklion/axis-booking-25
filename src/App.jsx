@@ -159,7 +159,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   };
   const showCaptain = boat === "BlueWater170" || boat === "Axopar22";
   const showTransferFields = bookingType === "Transfer";
-  const maxPassengers = boat === "Axopar" ? 8 : boat === "BlueWater170" ? 6 : boat === "Axopar22" ? 7 :"";
+  const maxPassengers = boat === "Axopar" ? 8 : boat === "BlueWater170" ? 7 : boat === "Axopar22" ? 5 :"";
 
   const inputClass = "p-2 border rounded w-full";
   const fullWidth = "w-full sm:w-[300px]";
