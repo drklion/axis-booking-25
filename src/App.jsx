@@ -74,16 +74,16 @@ export default function App() {
     const month = date ? new Date(date).getMonth() : null;
 
     if (boat === "Axopar22") {
-      const fullPrices = [200, 200, 200, 225, 225, 275, 350, 400, 275, 200, 0, 0]; // Jan–Dec
-      const halfPrices = [150, 150, 150, 175, 200, 225, 300, 350, 200, 175, 0, 0];
+      const fullPrices = [200, 200, 200, 225, 250, 250, 250, 250, 200, 0, 0]; // Jan–Dec
+      const halfPrices = [150, 150, 150, 175, 200, 200, 200, 200, 150, 0, 0];
       const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
       if (basePrice === 0) return "Unavailable this month";
       return `€${captain === "yes" ? basePrice + 100 : basePrice} (€100 Fixed Deposit)`;
     }
 
     if (boat === "BlueWater170") {
-      const fullPrices = [80, 80, 80, 80, 90, 110, 120, 130, 110, 90, 0, 0];
-      const halfPrices = [70, 70, 70, 70, 80, 100, 110, 120, 90, 80, 0, 0];
+      const fullPrices = [80, 80, 80, 80, 90, 100, 110, 110, 90, 80, 0, 0];
+      const halfPrices = [70, 70, 70, 70, 80, 90, 90, 90, 80, 70, 0, 0];
       const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
       if (basePrice === 0) return "Unavailable this month";
       return `€${captain === "yes" ? basePrice + 100 : basePrice} (€50 Fixed Deposit)`;
@@ -91,8 +91,8 @@ export default function App() {
 
     if (boat === "Axopar") {
       return bookingType === "Full Day Charter"
-        ? "€1,450 (30% = €435)"
-        : "€1,100 (30% = €330)";
+        ? "€1,200 (50% = €600)"
+        : "€1,100 (50% = €550)";
     }
 
     return "";
