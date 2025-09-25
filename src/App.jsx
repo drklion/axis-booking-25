@@ -28,8 +28,8 @@ export default function App() {
   zip: "",
   transferFrom: "",
   transferTo: "",
-  agreed: false,
-  agreementTimestamp: ""
+  agreed: false,                // ✅ added
+  agreementTimestamp: ""        // ✅ added
 });
   const [inventory, setInventory] = useState(initialInventory);
 
