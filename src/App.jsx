@@ -127,16 +127,16 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   };
 
   const handleSubmit = () => {
-    if (!info.name || !info.phone || !info.email) {
-      alert("Please fill in your full name, phone, and email before submitting.");
-      return;
-    }
+  if (!info.name || !info.phone || !info.email) {
+    alert("Please fill in your full name, phone, and email before submitting.");
+    return;
+  }
 
-    const assignedBoat = handleBooking();
-    if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
+  const assignedBoat = handleBooking();
+  if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
 
-    sendEmail();
-    alert("Booking submitted. Stripe will open in a new tab.");
+  sendEmail();
+  alert("Booking submitted. Stripe will open in a new tab.");
 
     const stripeLinks = {
       Axopar: {
