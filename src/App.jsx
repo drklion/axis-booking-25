@@ -37,36 +37,40 @@ export default function App() {
     Axopar: "Axopar 37XC 11.7 Meter (w/Captain)",
     Axopar22: "Axopar 22 T-Top",
     BlueWater170: "Blue Water 170 5 Meter Rental"
-  };
-  const isTimeSlotAvailable = (boatName, newStart, duration) => {
-    const bookings = inventory[boatName];
-    const newEnd = newStart + duration * 60;
-    return bookings.every(([start, end]) => newEnd <= start || newStart >= end);
-  };
+ 
+    const isTimeSlotAvailable = (boatName, newStart, duration) => {
+  const bookings = inventory[boatName] || [];
+  const newEnd = newStart + duration * 60;
+  return bookings.every(([start, end]) => newEnd <= start || newStart >= end);
+};
 
-  const handleBooking = () => {
-    if (boat === "BlueWater170" || boat === "Axopar22") {
-      const duration = bookingType === "Full Day Charter" ? 8 : 4;
-      const [hour, min] = time.split(":").map(Number);
-      const start = hour * 60 + min;
-      const availableBoat = Object.keys(inventory).find(name =>
-        isTimeSlotAvailable(name, start, duration)
-      );
-
-      if (availableBoat) {
-        const newEnd = start + duration * 60;
-        setInventory(prev => ({
-          ...prev,
-          [availableBoat]: [...prev[availableBoat], [start, newEnd]]
-        }));
-        return availableBoat;
-      } else {
-        alert("No available boats at that time.");
-        return null;
-      }
+  const handleBooking = (...) => {
+  if (boat === "BlueWater170" || boat === "Axopar22") {
+    if (!time) {
+      alert("Please select a time.");
+      return null;
     }
-    return null;
-  };
+    const duration = bookingType === "Full Day Charter" ? 8 : 4;
+    const [hour, min] = time.split(":").map(Number);
+    const start = hour * 60 + min;
+    const availableBoat = Object.keys(inventory).find(name =>
+      isTimeSlotAvailable(name, start, duration)
+    );
+
+    if (availableBoat) {
+      const newEnd = start + duration * 60;
+      setInventory(prev => ({
+        ...prev,
+        [availableBoat]: [...prev[availableBoat], [start, newEnd]]
+      }));
+      return availableBoat;
+    } else {
+      alert("No available boats at that time.");
+      return null;
+    }
+  }
+  return null; // Axopar 37XC not slot-managed here
+};
 
   const getPriceSummary = () => {
   if (!boat) return "";
@@ -128,13 +132,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       .then(data => console.log("Email sent:", data))
       .catch(error => console.error("Error sending email:", error));
   };
-
-const handleBooking = () => {
-  if (boat === "BlueWater170" || boat === "Axopar22") {
-    if (!time) {
-      alert("Please select a time.");
-      return null;
-    }
+  
     const duration = bookingType === "Full Day Charter" ? 8 : 4;
     const [hour, min] = time.split(":").map(Number);
     const start = hour * 60 + min;
@@ -384,10 +382,7 @@ const handleBooking = () => {
 {/* Submit Button */}
 <button
   onClick={handleSubmit}
-  disabled={!info.agreed}
-  className={`px-4 py-2 rounded text-white ${
-    info.agreed ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
-  }`}
+  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
 >
   Submit Booking
 </button>
