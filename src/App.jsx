@@ -126,17 +126,22 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       .catch(error => console.error("Error sending email:", error));
   };
 
- const handleSubmit = () => {
+const handleSubmit = () => {
   if (!info.name || !info.phone || !info.email) {
     alert("Please fill in your full name, phone, and email before submitting.");
     return;
   }
 
-{!info.agreed && (
-  <p className="text-red-600 text-sm mt-1">
-    You must agree to the Terms & Conditions before submitting.
-  </p>
-)}
+  if (!info.agreed) {
+    alert("You must agree to the Terms & Conditions before submitting.");
+    return;
+  }
+
+  const assignedBoat = handleBooking();
+  if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
+
+  sendEmail();
+  alert("Booking submitted. Stripe will open in a new tab.");
 
   const assignedBoat = handleBooking();
   if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
