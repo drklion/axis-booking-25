@@ -130,32 +130,37 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   };
 
 const handleSubmit = () => {
+  console.log("agreed?", info.agreed); // TEMP: debug
+
+  // 1) Required contact fields
   if (!info.name || !info.phone || !info.email) {
     alert("Please fill in your full name, phone, and email before submitting.");
     return;
   }
 
+  // 2) Terms must be checked BEFORE anything else
   if (!info.agreed) {
     alert("You must agree to the Terms & Conditions before submitting.");
     return;
   }
 
-  // (Optional) block if missing key selections
+  // 3) Basic booking completeness
   if (!boat || !bookingType || !date || !time) {
     alert("Please select boat, booking type, date and time before submitting.");
     return;
   }
 
-  // (Optional) enforce passenger cap
+  // 4) Enforce passenger cap (optional but recommended)
   if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
     alert(`Maximum passengers for this boat is ${maxPassengers}.`);
     return;
   }
 
-  // Only applies to BlueWater170 / Axopar22 (fleet managed by slots)
+  // 5) Slot assignment for boats that use inventory logic
   const assignedBoat = handleBooking();
   if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
 
+  // 6) Notify + open Stripe
   sendEmail();
   alert("Booking submitted. Stripe will open in a new tab.");
 
