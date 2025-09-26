@@ -10,6 +10,7 @@ const initialInventory = {
 export default function App() {
   const today = new Date();
 
+  // ---------------- State ----------------
   const [boat, setBoat] = useState("");
   const [bookingType, setBookingType] = useState("");
   const [date, setDate] = useState(null);
@@ -17,6 +18,7 @@ export default function App() {
   const [passengers, setPassengers] = useState("1");
   const [captain, setCaptain] = useState("no");
   const [departure, setDeparture] = useState("");
+  const [triedSubmit, setTriedSubmit] = useState(false);
   const [info, setInfo] = useState({
     name: "",
     phone: "",
@@ -33,12 +35,24 @@ export default function App() {
   });
   const [inventory, setInventory] = useState(initialInventory);
 
+  // --------------- Config ----------------
   const boatNames = {
     Axopar: "Axopar 37XC 11.7 Meter (w/Captain)",
     Axopar22: "Axopar 22 T-Top",
     BlueWater170: "Blue Water 170 5 Meter Rental"
   };
 
+  const showCaptain = boat === "BlueWater170" || boat === "Axopar22";
+  const showTransferFields = bookingType === "Transfer";
+  const maxPassengers =
+    boat === "Axopar" ? 8 :
+    boat === "BlueWater170" ? 7 :
+    boat === "Axopar22" ? 5 :
+    8;
+
+  const inputClass = "p-2 border rounded w-full";
+
+  // --------------- Helpers ----------------
   const isTimeSlotAvailable = (boatName, newStart, duration) => {
     const bookings = inventory[boatName] || [];
     const newEnd = newStart + duration * 60;
@@ -142,13 +156,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       .catch((error) => console.error("Error sending email:", error));
   };
 
-  const showCaptain = boat === "BlueWater170" || boat === "Axopar22";
-  const showTransferFields = bookingType === "Transfer";
-  const maxPassengers =
-    boat === "Axopar" ? 8 : boat === "BlueWater170" ? 7 : boat === "Axopar22" ? 5 : 8;
-
-  const inputClass = "p-2 border rounded w-full";
-
+  // --------------- UI helpers ----------------
   const generateTimeOptions = () => {
     const options = [];
     for (let h = 8; h <= 12; h++) {
@@ -171,7 +179,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
     return options;
   };
 
+  // --------------- Submit ----------------
   const handleSubmit = () => {
+    setTriedSubmit(true);
+    console.log("SUBMIT CLICKED. agreed=", info.agreed, "name/phone/email=", info.name, info.phone, info.email);
+
     // 1) Required contact fields
     if (!info.name || !info.phone || !info.email) {
       alert("Please fill in your full name, phone, and email before submitting.");
@@ -224,6 +236,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
     }
   };
 
+  // --------------- JSX ----------------
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-4">
       <div className="text-center">
@@ -245,11 +258,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       {/* Booking Type */}
       <div>
         <label className="block font-semibold mb-1">Booking Type:</label>
-        <select
-          value={bookingType}
-          onChange={(e) => setBookingType(e.target.value)}
-          className={inputClass}
-        >
+        <select value={bookingType} onChange={(e) => setBookingType(e.target.value)} className={inputClass}>
           <option value="">Select</option>
           <option value="Full Day Charter">Full Day Charter</option>
           <option value="Half Day Charter">Half Day Charter</option>
@@ -261,11 +270,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       {boat === "Axopar" && (
         <div>
           <label className="block font-semibold mb-1">Departure Point:</label>
-          <select
-            value={departure}
-            onChange={(e) => setDeparture(e.target.value)}
-            className={inputClass}
-          >
+          <select value={departure} onChange={(e) => setDeparture(e.target.value)} className={inputClass}>
             <option value="">Select departure point</option>
             <option value="Loutraki, Skopelos">Loutraki, Skopelos</option>
             <option value="Skopelos Town">Skopelos Town</option>
@@ -280,11 +285,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       {showCaptain && (
         <div>
           <label className="block font-semibold mb-1">Captain:</label>
-          <select
-            value={captain}
-            onChange={(e) => setCaptain(e.target.value)}
-            className={inputClass}
-          >
+          <select value={captain} onChange={(e) => setCaptain(e.target.value)} className={inputClass}>
             <option value="no">No</option>
             <option value="yes">Yes</option>
           </select>
@@ -332,125 +333,42 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block font-semibold mb-1">Passengers:</label>
-          <select
-            value={passengers}
-            onChange={(e) => setPassengers(e.target.value)}
-            className={inputClass}
-          >
+          <select value={passengers} onChange={(e) => setPassengers(e.target.value)} className={inputClass}>
             {generatePassengerOptions()}
           </select>
+          <small className="text-xs text-gray-500">Max {maxPassengers} passengers</small>
         </div>
       </div>
 
       {/* Contact Details */}
       <div className="grid sm:grid-cols-2 gap-4">
-        <input
-          placeholder="Full Name"
-          value={info.name}
-          onChange={(e) => setInfo({ ...info, name: e.target.value })}
-          className={inputClass}
-        />
-        <input
-          placeholder="Phone"
-          value={info.phone}
-          onChange={(e) => setInfo({ ...info, phone: e.target.value })}
-          className={inputClass}
-        />
-        <input
-          placeholder="Email"
-          value={info.email}
-          onChange={(e) => setInfo({ ...info, email: e.target.value })}
-          className={inputClass}
-        />
-        <input
-          placeholder="Country"
-          value={info.country}
-          onChange={(e) => setInfo({ ...info, country: e.target.value })}
-          className={inputClass}
-        />
-        <input
-          placeholder="Address"
-          value={info.address}
-          onChange={(e) => setInfo({ ...info, address: e.target.value })}
-          className={inputClass}
-        />
-        <input
-          placeholder="City"
-          value={info.city}
-          onChange={(e) => setInfo({ ...info, city: e.target.value })}
-          className={inputClass}
-        />
-        <input
-          placeholder="State"
-          value={info.state}
-          onChange={(e) => setInfo({ ...info, state: e.target.value })}
-          className={inputClass}
-        />
-        <input
-          placeholder="ZIP"
-          value={info.zip}
-          onChange={(e) => setInfo({ ...info, zip: e.target.value })}
-          className={inputClass}
-        />
+        <input placeholder="Full Name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} className={inputClass} />
+        <input placeholder="Phone" value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className={inputClass} />
+        <input placeholder="Email" value={info.email} onChange={(e) => setInfo({ ...info, email: e.target.value })} className={inputClass} />
+        <input placeholder="Country" value={info.country} onChange={(e) => setInfo({ ...info, country: e.target.value })} className={inputClass} />
+        <input placeholder="Address" value={info.address} onChange={(e) => setInfo({ ...info, address: e.target.value })} className={inputClass} />
+        <input placeholder="City" value={info.city} onChange={(e) => setInfo({ ...info, city: e.target.value })} className={inputClass} />
+        <input placeholder="State" value={info.state} onChange={(e) => setInfo({ ...info, state: e.target.value })} className={inputClass} />
+        <input placeholder="ZIP" value={info.zip} onChange={(e) => setInfo({ ...info, zip: e.target.value })} className={inputClass} />
       </div>
 
       {/* Booking Summary */}
       <div className="border-t pt-4">
         <p className="font-semibold text-lg mb-2">Booking Summary</p>
         <ul className="space-y-1">
-          {info.name && (
-            <li>
-              <strong>Name:</strong> {info.name}
-            </li>
-          )}
-          {info.phone && (
-            <li>
-              <strong>Phone:</strong> {info.phone}
-            </li>
-          )}
-          {boat && (
-            <li>
-              <strong>Boat:</strong> {boatNames[boat]}
-            </li>
-          )}
-          {bookingType && (
-            <li>
-              <strong>Booking Type:</strong> {bookingType}
-            </li>
-          )}
-          {boat === "Axopar" && departure && (
-            <li>
-              <strong>Departure:</strong> {departure}
-            </li>
-          )}
-          {date && (
-            <li>
-              <strong>Date:</strong> {date.toLocaleDateString()}
-            </li>
-          )}
-          {time && (
-            <li>
-              <strong>Time:</strong> {time}
-            </li>
-          )}
-          {passengers && (
-            <li>
-              <strong>Passengers:</strong> {passengers}
-            </li>
-          )}
-          {showCaptain && (
-            <li>
-              <strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}
-            </li>
-          )}
+          {info.name && <li><strong>Name:</strong> {info.name}</li>}
+          {info.phone && <li><strong>Phone:</strong> {info.phone}</li>}
+          {boat && <li><strong>Boat:</strong> {boatNames[boat]}</li>}
+          {bookingType && <li><strong>Booking Type:</strong> {bookingType}</li>}
+          {boat === "Axopar" && departure && <li><strong>Departure:</strong> {departure}</li>}
+          {date && <li><strong>Date:</strong> {date.toLocaleDateString()}</li>}
+          {time && <li><strong>Time:</strong> {time}</li>}
+          {passengers && <li><strong>Passengers:</strong> {passengers}</li>}
+          {showCaptain && <li><strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}</li>}
           {bookingType === "Transfer" && (
-            <li>
-              <strong>Transfer:</strong> From {info.transferFrom} to {info.transferTo}
-            </li>
+            <li><strong>Transfer:</strong> From {info.transferFrom} to {info.transferTo}</li>
           )}
-          <li>
-            <strong>Payment:</strong> {getPriceSummary()}
-          </li>
+          <li><strong>Payment:</strong> {getPriceSummary()}</li>
         </ul>
       </div>
 
@@ -486,6 +404,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
             I have read and agree to the Terms & Conditions.
           </label>
         </div>
+        {triedSubmit && !info.agreed && (
+          <p className="text-red-600 text-sm mt-1">
+            You must agree to the Terms & Conditions before submitting.
+          </p>
+        )}
         <div className="text-sm text-blue-600 mt-1">
           <a
             href="/Axis_Global_Charter_Terms_Full_Revised.pdf"
@@ -500,7 +423,12 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
 
       {/* Submit Button */}
       <button
-        onClick={handleSubmit}
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          console.log("clicked");
+          handleSubmit();
+        }}
         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
       >
         Submit Booking
