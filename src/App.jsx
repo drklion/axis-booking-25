@@ -74,12 +74,15 @@ export default function App() {
     const month = date ? new Date(date).getMonth() : null;
 
     if (boat === "Axopar22") {
-      const fullPrices = [200, 200, 200, 225, 250, 250, 250, 250, 200, 0, 0]; // Jan–Dec
-      const halfPrices = [150, 150, 150, 175, 200, 200, 200, 200, 150, 0, 0];
-      const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
-      if (basePrice === 0) return "Unavailable this month";
-      return `€${captain === "yes" ? basePrice + 100 : basePrice} (€100 Fixed Deposit)`;
-    }
+  // Jan–Dec (12 values)
+  const fullPrices = [200, 200, 200, 225, 250, 250, 250, 250, 200, 0, 0, 0];
+  const halfPrices = [150, 150, 150, 175, 200, 200, 200, 200, 150, 0, 0, 0];
+  const month = date ? new Date(date).getMonth() : null;
+  if (month === null) return "Select a date";
+  const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
+  if (basePrice === 0) return "Unavailable this month";
+  return `€${captain === "yes" ? basePrice + 100 : basePrice} (€100 Fixed Deposit)`;
+}
 
     if (boat === "BlueWater170") {
       const fullPrices = [80, 80, 80, 80, 90, 100, 110, 110, 90, 80, 0, 0];
@@ -137,37 +140,44 @@ const handleSubmit = () => {
     return;
   }
 
+  // (Optional) block if missing key selections
+  if (!boat || !bookingType || !date || !time) {
+    alert("Please select boat, booking type, date and time before submitting.");
+    return;
+  }
+
+  // (Optional) enforce passenger cap
+  if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
+    alert(`Maximum passengers for this boat is ${maxPassengers}.`);
+    return;
+  }
+
+  // Only applies to BlueWater170 / Axopar22 (fleet managed by slots)
   const assignedBoat = handleBooking();
   if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
 
   sendEmail();
   alert("Booking submitted. Stripe will open in a new tab.");
 
-  const assignedBoat = handleBooking();
-  if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
-
-  sendEmail();
-  alert("Booking submitted. Stripe will open in a new tab.");
-
-    const stripeLinks = {
-      Axopar: {
-        "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
-        "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
-      },
-      BlueWater170: {
-        any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007"
-      },
-      Axopar22: {
-        any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006"
-      }
-    };
-
-    if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
-      window.open(stripeLinks[boat][bookingType], "_blank");
-    } else if (stripeLinks[boat] && stripeLinks[boat].any) {
-      window.open(stripeLinks[boat].any, "_blank");
+  const stripeLinks = {
+    Axopar: {
+      "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
+      "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
+    },
+    BlueWater170: {
+      any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007"
+    },
+    Axopar22: {
+      any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006"
     }
   };
+
+  if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
+    window.open(stripeLinks[boat][bookingType], "_blank");
+  } else if (stripeLinks[boat] && stripeLinks[boat].any) {
+    window.open(stripeLinks[boat].any, "_blank");
+  }
+};
   const showCaptain = boat === "BlueWater170" || boat === "Axopar22";
   const showTransferFields = bookingType === "Transfer";
   const maxPassengers = boat === "Axopar" ? 8 : boat === "BlueWater170" ? 7 : boat === "Axopar22" ? 5 :"";
