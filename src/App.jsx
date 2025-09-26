@@ -132,10 +132,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     return;
   }
 
-  if (!info.agreed) {
-    alert("You must agree to the Terms & Conditions before submitting.");
-    return;
-  }
+{!info.agreed && (
+  <p className="text-red-600 text-sm mt-1">
+    You must agree to the Terms & Conditions before submitting.
+  </p>
+)}
 
   const assignedBoat = handleBooking();
   if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
