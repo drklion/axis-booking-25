@@ -181,60 +181,110 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
 
   // --------------- Submit ----------------
   const handleSubmit = () => {
-    setTriedSubmit(true);
-    console.log("SUBMIT CLICKED. agreed=", info.agreed, "name/phone/email=", info.name, info.phone, info.email);
+  setTriedSubmit(true);
 
-    // 1) Required contact fields
-    if (!info.name || !info.phone || !info.email) {
-      alert("Please fill in your full name, phone, and email before submitting.");
+  // Trimmed values
+  const trim = (s) => (s || "").toString().trim();
+  const name  = trim(info.name);
+  const phone = trim(info.phone);
+  const email = trim(info.email);
+  const tFrom = trim(info.transferFrom);
+  const tTo   = trim(info.transferTo);
+
+  // --- Core selections first ---
+  if (!boat) {
+    alert("Please choose a boat.");
+    return;
+  }
+  if (!bookingType) {
+    alert("Please choose a booking type.");
+    return;
+  }
+  if (!date) {
+    alert("Please select a date.");
+    return;
+  }
+  if (!time) {
+    alert("Please select a time.");
+    return;
+  }
+
+  // --- Contact details (field-specific) ---
+  if (!name) {
+    alert("Please enter your full name.");
+    return;
+  }
+  if (!phone) {
+    alert("Please enter your phone number.");
+    return;
+  }
+  if (!email) {
+    alert("Please enter your email address.");
+    return;
+  }
+  // light email format check
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  // --- Terms required for ALL booking types ---
+  if (!info.agreed) {
+    alert("You must agree to the Terms & Conditions before submitting.");
+    return;
+  }
+
+  // --- Boat-specific requirements ---
+  // Axopar (37XC) requires a departure point for any charter type (Full/Half/Transfer)
+  if (boat === "Axopar" && !trim(departure)) {
+    alert("Please select a departure point for the Axopar 37XC.");
+    return;
+  }
+
+  // --- Booking-type-specific requirements ---
+  if (bookingType === "Transfer") {
+    if (!tFrom) {
+      alert("Please enter the Transfer From location.");
       return;
     }
-
-    // 2) Terms must be checked
-    if (!info.agreed) {
-      alert("You must agree to the Terms & Conditions before submitting.");
+    if (!tTo) {
+      alert("Please enter the Transfer To location.");
       return;
     }
+  }
 
-    // 3) Basic booking completeness
-    if (!boat || !bookingType || !date || !time) {
-      alert("Please select boat, booking type, date and time before submitting.");
-      return;
-    }
+  // --- Passenger cap (applies to any booking type) ---
+  if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
+    alert(`Maximum passengers for this boat is ${maxPassengers}.`);
+    return;
+  }
 
-    // 4) Enforce passenger cap
-    if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
-      alert(`Maximum passengers for this boat is ${maxPassengers}.`);
-      return;
-    }
+  // --- Slot assignment for rental boats (BlueWater170/Axopar22) ---
+  const assignedBoat = handleBooking();
+  if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) {
+    // handleBooking already alerted; just stop here
+    return;
+  }
 
-    // 5) Slot assignment for rental boats
-    const assignedBoat = handleBooking();
-    if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
+  // --- Success path: notify + open Stripe ---
+  sendEmail();
+  alert("Booking submitted. Stripe will open in a new tab.");
 
-    // 6) Notify + open Stripe
-    sendEmail();
-    alert("Booking submitted. Stripe will open in a new tab.");
-
-    const stripeLinks = {
-      Axopar: {
-        "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
-        "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
-      },
-      BlueWater170: {
-        any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007"
-      },
-      Axopar22: {
-        any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006"
-      }
-    };
-
-    if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
-      window.open(stripeLinks[boat][bookingType], "_blank");
-    } else if (stripeLinks[boat] && stripeLinks[boat].any) {
-      window.open(stripeLinks[boat].any, "_blank");
-    }
+  const stripeLinks = {
+    Axopar: {
+      "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
+      "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
+    },
+    BlueWater170: { any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007" },
+    Axopar22:     { any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006" }
   };
+
+  if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
+    window.open(stripeLinks[boat][bookingType], "_blank");
+  } else if (stripeLinks[boat] && stripeLinks[boat].any) {
+    window.open(stripeLinks[boat].any, "_blank");
+  }
+};
 
   // --------------- JSX ----------------
   return (
