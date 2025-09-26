@@ -69,37 +69,37 @@ export default function App() {
   };
 
   const getPriceSummary = () => {
-    if (!boat) return "";
-    if (bookingType === "Transfer") return "Contact for further info";
-    const month = date ? new Date(date).getMonth() : null;
+  if (!boat) return "";
+  if (bookingType === "Transfer") return "Contact for further info";
 
-    if (boat === "Axopar22") {
-  // Jan–Dec (12 values)
-  const fullPrices = [200, 200, 200, 225, 250, 250, 250, 250, 200, 0, 0, 0];
-  const halfPrices = [150, 150, 150, 175, 200, 200, 200, 200, 150, 0, 0, 0];
   const month = date ? new Date(date).getMonth() : null;
   if (month === null) return "Select a date";
-  const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
-  if (basePrice === 0) return "Unavailable this month";
-  return `€${captain === "yes" ? basePrice + 100 : basePrice} (€100 Fixed Deposit)`;
-}
 
-    if (boat === "BlueWater170") {
-      const fullPrices = [80, 80, 80, 80, 90, 100, 110, 110, 90, 80, 0, 0];
-      const halfPrices = [70, 70, 70, 70, 80, 90, 90, 90, 80, 70, 0, 0];
-      const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
-      if (basePrice === 0) return "Unavailable this month";
-      return `€${captain === "yes" ? basePrice + 100 : basePrice} (€50 Fixed Deposit)`;
-    }
+  if (boat === "Axopar22") {
+    // Jan–Dec (12 values)
+    const fullPrices = [200, 200, 200, 225, 250, 250, 250, 250, 200, 0, 0, 0];
+    const halfPrices = [150, 150, 150, 175, 200, 200, 200, 200, 150, 0, 0, 0];
+    const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
+    if (basePrice === 0) return "Unavailable this month";
+    return `€${captain === "yes" ? basePrice + 100 : basePrice} (€100 Fixed Deposit)`;
+  }
 
-    if (boat === "Axopar") {
-      return bookingType === "Full Day Charter"
-        ? "€1,200 (50% = €600)"
-        : "€1,100 (50% = €550)";
-    }
+  if (boat === "BlueWater170") {
+    const fullPrices = [80, 80, 80, 80, 90, 100, 110, 110, 90, 80, 0, 0];
+    const halfPrices = [70, 70, 70, 70, 80, 90, 90, 90, 80, 70, 0, 0];
+    const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
+    if (basePrice === 0) return "Unavailable this month";
+    return `€${captain === "yes" ? basePrice + 100 : basePrice} (€50 Fixed Deposit)`;
+  }
 
-    return "";
-  };
+  if (boat === "Axopar") {
+    return bookingType === "Full Day Charter"
+      ? "€1,200 (50% = €600)"
+      : "€1,100 (50% = €550)";
+  }
+
+  return "";
+};
   const sendEmail = () => {
     const summary = `Boat: ${boat ? boatNames[boat] : ""}
 Booking Type: ${bookingType}
@@ -129,14 +129,33 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       .catch(error => console.error("Error sending email:", error));
   };
 
-const handleSubmit = () => {
-  console.log("agreed?", info.agreed); // TEMP: debug
+const handleBooking = () => {
+  if (boat === "BlueWater170" || boat === "Axopar22") {
+    if (!time) {
+      alert("Please select a time.");
+      return null;
+    }
+    const duration = bookingType === "Full Day Charter" ? 8 : 4;
+    const [hour, min] = time.split(":").map(Number);
+    const start = hour * 60 + min;
+    const availableBoat = Object.keys(inventory).find(name =>
+      isTimeSlotAvailable(name, start, duration)
+    );
 
-  // 1) Required contact fields
-  if (!info.name || !info.phone || !info.email) {
-    alert("Please fill in your full name, phone, and email before submitting.");
-    return;
+    if (availableBoat) {
+      const newEnd = start + duration * 60;
+      setInventory(prev => ({
+        ...prev,
+        [availableBoat]: [...prev[availableBoat], [start, newEnd]]
+      }));
+      return availableBoat;
+    } else {
+      alert("No available boats at that time.");
+      return null;
+    }
   }
+  return null; // Axopar 37XC not slot-managed here
+};
 
   // 2) Terms must be checked BEFORE anything else
   if (!info.agreed) {
@@ -365,7 +384,11 @@ const handleSubmit = () => {
 {/* Submit Button */}
 <button
   onClick={handleSubmit}
-  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+  disabled={!info.agreed}
+  className={`px-4 py-2 rounded text-white ${
+    info.agreed ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+  }`}
+>
   Submit Booking
 </button>
     </div>
