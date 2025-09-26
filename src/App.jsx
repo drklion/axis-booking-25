@@ -18,92 +18,96 @@ export default function App() {
   const [captain, setCaptain] = useState("no");
   const [departure, setDeparture] = useState("");
   const [info, setInfo] = useState({
-  name: "",
-  phone: "",
-  email: "",
-  country: "",
-  address: "",
-  city: "",
-  state: "",
-  zip: "",
-  transferFrom: "",
-  transferTo: "",
-  agreed: false,                // ✅ added
-  agreementTimestamp: ""        // ✅ added
-});
+    name: "",
+    phone: "",
+    email: "",
+    country: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    transferFrom: "",
+    transferTo: "",
+    agreed: false,
+    agreementTimestamp: ""
+  });
   const [inventory, setInventory] = useState(initialInventory);
 
   const boatNames = {
     Axopar: "Axopar 37XC 11.7 Meter (w/Captain)",
     Axopar22: "Axopar 22 T-Top",
     BlueWater170: "Blue Water 170 5 Meter Rental"
- 
-    const isTimeSlotAvailable = (boatName, newStart, duration) => {
-  const bookings = inventory[boatName] || [];
-  const newEnd = newStart + duration * 60;
-  return bookings.every(([start, end]) => newEnd <= start || newStart >= end);
-};
+  };
 
-  const handleBooking = (...) => {
-  if (boat === "BlueWater170" || boat === "Axopar22") {
-    if (!time) {
-      alert("Please select a time.");
-      return null;
-    }
-    const duration = bookingType === "Full Day Charter" ? 8 : 4;
-    const [hour, min] = time.split(":").map(Number);
-    const start = hour * 60 + min;
-    const availableBoat = Object.keys(inventory).find(name =>
-      isTimeSlotAvailable(name, start, duration)
-    );
+  const isTimeSlotAvailable = (boatName, newStart, duration) => {
+    const bookings = inventory[boatName] || [];
+    const newEnd = newStart + duration * 60;
+    return bookings.every(([start, end]) => newEnd <= start || newStart >= end);
+  };
 
-    if (availableBoat) {
-      const newEnd = start + duration * 60;
-      setInventory(prev => ({
-        ...prev,
-        [availableBoat]: [...prev[availableBoat], [start, newEnd]]
-      }));
-      return availableBoat;
-    } else {
-      alert("No available boats at that time.");
-      return null;
+  const handleBooking = () => {
+    if (boat === "BlueWater170" || boat === "Axopar22") {
+      if (!time) {
+        alert("Please select a time.");
+        return null;
+      }
+      const duration = bookingType === "Full Day Charter" ? 8 : 4;
+      const [hour, min] = time.split(":").map(Number);
+      const start = hour * 60 + min;
+      const availableBoat = Object.keys(inventory).find((name) =>
+        isTimeSlotAvailable(name, start, duration)
+      );
+
+      if (availableBoat) {
+        const newEnd = start + duration * 60;
+        setInventory((prev) => ({
+          ...prev,
+          [availableBoat]: [...prev[availableBoat], [start, newEnd]]
+        }));
+        return availableBoat;
+      } else {
+        alert("No available boats at that time.");
+        return null;
+      }
     }
-  }
-  return null; // Axopar 37XC not slot-managed here
-};
+    return null; // Axopar 37XC not slot-managed here
+  };
 
   const getPriceSummary = () => {
-  if (!boat) return "";
-  if (bookingType === "Transfer") return "Contact for further info";
+    if (!boat) return "";
+    if (bookingType === "Transfer") return "Contact for further info";
 
-  const month = date ? new Date(date).getMonth() : null;
-  if (month === null) return "Select a date";
+    const month = date ? new Date(date).getMonth() : null;
+    if (month === null) return "Select a date";
 
-  if (boat === "Axopar22") {
-    // Jan–Dec (12 values)
-    const fullPrices = [200, 200, 200, 225, 250, 250, 250, 250, 200, 0, 0, 0];
-    const halfPrices = [150, 150, 150, 175, 200, 200, 200, 200, 150, 0, 0, 0];
-    const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
-    if (basePrice === 0) return "Unavailable this month";
-    return `€${captain === "yes" ? basePrice + 100 : basePrice} (€100 Fixed Deposit)`;
-  }
+    if (boat === "Axopar22") {
+      // Jan–Dec (12 values)
+      const fullPrices = [200, 200, 200, 225, 250, 250, 250, 250, 200, 0, 0, 0];
+      const halfPrices = [150, 150, 150, 175, 200, 200, 200, 200, 150, 0, 0, 0];
+      const basePrice =
+        bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
+      if (basePrice === 0) return "Unavailable this month";
+      return `€${captain === "yes" ? basePrice + 100 : basePrice} (€100 Fixed Deposit)`;
+    }
 
-  if (boat === "BlueWater170") {
-    const fullPrices = [80, 80, 80, 80, 90, 100, 110, 110, 90, 80, 0, 0];
-    const halfPrices = [70, 70, 70, 70, 80, 90, 90, 90, 80, 70, 0, 0];
-    const basePrice = bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
-    if (basePrice === 0) return "Unavailable this month";
-    return `€${captain === "yes" ? basePrice + 100 : basePrice} (€50 Fixed Deposit)`;
-  }
+    if (boat === "BlueWater170") {
+      const fullPrices = [80, 80, 80, 80, 90, 100, 110, 110, 90, 80, 0, 0];
+      const halfPrices = [70, 70, 70, 70, 80, 90, 90, 90, 80, 70, 0, 0];
+      const basePrice =
+        bookingType === "Full Day Charter" ? fullPrices[month] : halfPrices[month];
+      if (basePrice === 0) return "Unavailable this month";
+      return `€${captain === "yes" ? basePrice + 100 : basePrice} (€50 Fixed Deposit)`;
+    }
 
-  if (boat === "Axopar") {
-    return bookingType === "Full Day Charter"
-      ? "€1,200 (50% = €600)"
-      : "€1,100 (50% = €550)";
-  }
+    if (boat === "Axopar") {
+      return bookingType === "Full Day Charter"
+        ? "€1,200 (50% = €600)"
+        : "€1,100 (50% = €550)";
+    }
 
-  return "";
-};
+    return "";
+  };
+
   const sendEmail = () => {
     const summary = `Boat: ${boat ? boatNames[boat] : ""}
 Booking Type: ${bookingType}
@@ -113,14 +117,19 @@ Passengers: ${passengers}
 Captain: ${showCaptain ? (captain === "yes" ? "Yes" : "No") : "Included"}
 Departure: ${boat === "Axopar" ? departure : "N/A"}
 Payment: ${getPriceSummary()}
-Transfer: ${bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"}
-Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(Boolean).join(" ")}`;
+Transfer: ${
+      bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"
+    }
+Agreed Terms: ${info.agreed ? `Yes at ${info.agreementTimestamp}` : "No"}
+Address: ${[info.country, info.address, info.city, info.state, info.zip]
+      .filter(Boolean)
+      .join(" ")}`;
 
     fetch("https://formsubmit.co/ajax/info@axisyachtcharters.com", {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "Content-Type": "application/json",
+        Accept: "application/json"
       },
       body: JSON.stringify({
         name: info.name,
@@ -128,90 +137,23 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         message: summary
       })
     })
-      .then(response => response.json())
-      .then(data => console.log("Email sent:", data))
-      .catch(error => console.error("Error sending email:", error));
-  };
-  
-    const duration = bookingType === "Full Day Charter" ? 8 : 4;
-    const [hour, min] = time.split(":").map(Number);
-    const start = hour * 60 + min;
-    const availableBoat = Object.keys(inventory).find(name =>
-      isTimeSlotAvailable(name, start, duration)
-    );
-
-    if (availableBoat) {
-      const newEnd = start + duration * 60;
-      setInventory(prev => ({
-        ...prev,
-        [availableBoat]: [...prev[availableBoat], [start, newEnd]]
-      }));
-      return availableBoat;
-    } else {
-      alert("No available boats at that time.");
-      return null;
-    }
-  }
-  return null; // Axopar 37XC not slot-managed here
-};
-
-  // 2) Terms must be checked BEFORE anything else
-  if (!info.agreed) {
-    alert("You must agree to the Terms & Conditions before submitting.");
-    return;
-  }
-
-  // 3) Basic booking completeness
-  if (!boat || !bookingType || !date || !time) {
-    alert("Please select boat, booking type, date and time before submitting.");
-    return;
-  }
-
-  // 4) Enforce passenger cap (optional but recommended)
-  if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
-    alert(`Maximum passengers for this boat is ${maxPassengers}.`);
-    return;
-  }
-
-  // 5) Slot assignment for boats that use inventory logic
-  const assignedBoat = handleBooking();
-  if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
-
-  // 6) Notify + open Stripe
-  sendEmail();
-  alert("Booking submitted. Stripe will open in a new tab.");
-
-  const stripeLinks = {
-    Axopar: {
-      "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
-      "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
-    },
-    BlueWater170: {
-      any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007"
-    },
-    Axopar22: {
-      any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006"
-    }
+      .then((response) => response.json())
+      .then((data) => console.log("Email sent:", data))
+      .catch((error) => console.error("Error sending email:", error));
   };
 
-  if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
-    window.open(stripeLinks[boat][bookingType], "_blank");
-  } else if (stripeLinks[boat] && stripeLinks[boat].any) {
-    window.open(stripeLinks[boat].any, "_blank");
-  }
-};
   const showCaptain = boat === "BlueWater170" || boat === "Axopar22";
   const showTransferFields = bookingType === "Transfer";
-  const maxPassengers = boat === "Axopar" ? 8 : boat === "BlueWater170" ? 7 : boat === "Axopar22" ? 5 :"";
+  const maxPassengers =
+    boat === "Axopar" ? 8 : boat === "BlueWater170" ? 7 : boat === "Axopar22" ? 5 : 8;
 
   const inputClass = "p-2 border rounded w-full";
-  const fullWidth = "w-full sm:w-[300px]";
 
   const generateTimeOptions = () => {
     const options = [];
     for (let h = 8; h <= 12; h++) {
-      options.push(`${String(h).padStart(2, '0')}:00`);
-      if (h < 12) options.push(`${String(h).padStart(2, '0')}:30`);
+      options.push(`${String(h).padStart(2, "0")}:00`);
+      if (h < 12) options.push(`${String(h).padStart(2, "0")}:30`);
     }
     return options;
   };
@@ -220,9 +162,66 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     const limit = maxPassengers || 8;
     const options = [];
     for (let i = 1; i <= limit; i++) {
-      options.push(<option key={i} value={i}>{i}</option>);
+      options.push(
+        <option key={i} value={i}>
+          {i}
+        </option>
+      );
     }
     return options;
+  };
+
+  const handleSubmit = () => {
+    // 1) Required contact fields
+    if (!info.name || !info.phone || !info.email) {
+      alert("Please fill in your full name, phone, and email before submitting.");
+      return;
+    }
+
+    // 2) Terms must be checked
+    if (!info.agreed) {
+      alert("You must agree to the Terms & Conditions before submitting.");
+      return;
+    }
+
+    // 3) Basic booking completeness
+    if (!boat || !bookingType || !date || !time) {
+      alert("Please select boat, booking type, date and time before submitting.");
+      return;
+    }
+
+    // 4) Enforce passenger cap
+    if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
+      alert(`Maximum passengers for this boat is ${maxPassengers}.`);
+      return;
+    }
+
+    // 5) Slot assignment for rental boats
+    const assignedBoat = handleBooking();
+    if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) return;
+
+    // 6) Notify + open Stripe
+    sendEmail();
+    alert("Booking submitted. Stripe will open in a new tab.");
+
+    const stripeLinks = {
+      Axopar: {
+        "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
+        "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
+      },
+      BlueWater170: {
+        any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007"
+      },
+      Axopar22: {
+        any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006"
+      }
+    };
+
+    if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
+      window.open(stripeLinks[boat][bookingType], "_blank");
+    } else if (stripeLinks[boat] && stripeLinks[boat].any) {
+      window.open(stripeLinks[boat].any, "_blank");
+    }
   };
 
   return (
@@ -246,7 +245,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       {/* Booking Type */}
       <div>
         <label className="block font-semibold mb-1">Booking Type:</label>
-        <select value={bookingType} onChange={(e) => setBookingType(e.target.value)} className={inputClass}>
+        <select
+          value={bookingType}
+          onChange={(e) => setBookingType(e.target.value)}
+          className={inputClass}
+        >
           <option value="">Select</option>
           <option value="Full Day Charter">Full Day Charter</option>
           <option value="Half Day Charter">Half Day Charter</option>
@@ -258,7 +261,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       {boat === "Axopar" && (
         <div>
           <label className="block font-semibold mb-1">Departure Point:</label>
-          <select value={departure} onChange={(e) => setDeparture(e.target.value)} className={inputClass}>
+          <select
+            value={departure}
+            onChange={(e) => setDeparture(e.target.value)}
+            className={inputClass}
+          >
             <option value="">Select departure point</option>
             <option value="Loutraki, Skopelos">Loutraki, Skopelos</option>
             <option value="Skopelos Town">Skopelos Town</option>
@@ -273,7 +280,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       {showCaptain && (
         <div>
           <label className="block font-semibold mb-1">Captain:</label>
-          <select value={captain} onChange={(e) => setCaptain(e.target.value)} className={inputClass}>
+          <select
+            value={captain}
+            onChange={(e) => setCaptain(e.target.value)}
+            className={inputClass}
+          >
             <option value="no">No</option>
             <option value="yes">Yes</option>
           </select>
@@ -283,8 +294,18 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       {/* Transfer fields */}
       {showTransferFields && (
         <div className="grid sm:grid-cols-2 gap-4">
-          <input placeholder="Transfer From" value={info.transferFrom} onChange={(e) => setInfo({ ...info, transferFrom: e.target.value })} className={inputClass} />
-          <input placeholder="Transfer To" value={info.transferTo} onChange={(e) => setInfo({ ...info, transferTo: e.target.value })} className={inputClass} />
+          <input
+            placeholder="Transfer From"
+            value={info.transferFrom}
+            onChange={(e) => setInfo({ ...info, transferFrom: e.target.value })}
+            className={inputClass}
+          />
+          <input
+            placeholder="Transfer To"
+            value={info.transferTo}
+            onChange={(e) => setInfo({ ...info, transferTo: e.target.value })}
+            className={inputClass}
+          />
         </div>
       )}
 
@@ -299,7 +320,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
           <select value={time} onChange={(e) => setTime(e.target.value)} className={inputClass}>
             <option value="">Select Time</option>
             {generateTimeOptions().map((t) => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
           </select>
         </div>
@@ -309,7 +332,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block font-semibold mb-1">Passengers:</label>
-          <select value={passengers} onChange={(e) => setPassengers(e.target.value)} className={inputClass}>
+          <select
+            value={passengers}
+            onChange={(e) => setPassengers(e.target.value)}
+            className={inputClass}
+          >
             {generatePassengerOptions()}
           </select>
         </div>
@@ -317,75 +344,167 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
 
       {/* Contact Details */}
       <div className="grid sm:grid-cols-2 gap-4">
-        <input placeholder="Full Name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} className={inputClass} />
-        <input placeholder="Phone" value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className={inputClass} />
-        <input placeholder="Email" value={info.email} onChange={(e) => setInfo({ ...info, email: e.target.value })} className={inputClass} />
-        <input placeholder="Country" value={info.country} onChange={(e) => setInfo({ ...info, country: e.target.value })} className={inputClass} />
-        <input placeholder="Address" value={info.address} onChange={(e) => setInfo({ ...info, address: e.target.value })} className={inputClass} />
-        <input placeholder="City" value={info.city} onChange={(e) => setInfo({ ...info, city: e.target.value })} className={inputClass} />
-        <input placeholder="State" value={info.state} onChange={(e) => setInfo({ ...info, state: e.target.value })} className={inputClass} />
-        <input placeholder="ZIP" value={info.zip} onChange={(e) => setInfo({ ...info, zip: e.target.value })} className={inputClass} />
+        <input
+          placeholder="Full Name"
+          value={info.name}
+          onChange={(e) => setInfo({ ...info, name: e.target.value })}
+          className={inputClass}
+        />
+        <input
+          placeholder="Phone"
+          value={info.phone}
+          onChange={(e) => setInfo({ ...info, phone: e.target.value })}
+          className={inputClass}
+        />
+        <input
+          placeholder="Email"
+          value={info.email}
+          onChange={(e) => setInfo({ ...info, email: e.target.value })}
+          className={inputClass}
+        />
+        <input
+          placeholder="Country"
+          value={info.country}
+          onChange={(e) => setInfo({ ...info, country: e.target.value })}
+          className={inputClass}
+        />
+        <input
+          placeholder="Address"
+          value={info.address}
+          onChange={(e) => setInfo({ ...info, address: e.target.value })}
+          className={inputClass}
+        />
+        <input
+          placeholder="City"
+          value={info.city}
+          onChange={(e) => setInfo({ ...info, city: e.target.value })}
+          className={inputClass}
+        />
+        <input
+          placeholder="State"
+          value={info.state}
+          onChange={(e) => setInfo({ ...info, state: e.target.value })}
+          className={inputClass}
+        />
+        <input
+          placeholder="ZIP"
+          value={info.zip}
+          onChange={(e) => setInfo({ ...info, zip: e.target.value })}
+          className={inputClass}
+        />
       </div>
+
+      {/* Booking Summary */}
       <div className="border-t pt-4">
         <p className="font-semibold text-lg mb-2">Booking Summary</p>
         <ul className="space-y-1">
-          {info.name && <li><strong>Name:</strong> {info.name}</li>}
-          {info.phone && <li><strong>Phone:</strong> {info.phone}</li>}
-          {boat && <li><strong>Boat:</strong> {boatNames[boat]}</li>}
-          {bookingType && <li><strong>Booking Type:</strong> {bookingType}</li>}
-          {boat === "Axopar" && departure && <li><strong>Departure:</strong> {departure}</li>}
-          {date && <li><strong>Date:</strong> {date.toLocaleDateString()}</li>}
-          {time && <li><strong>Time:</strong> {time}</li>}
-          {passengers && <li><strong>Passengers:</strong> {passengers}</li>}
-          {showCaptain && <li><strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}</li>}
-          {bookingType === "Transfer" && (
-            <li><strong>Transfer:</strong> From {info.transferFrom} to {info.transferTo}</li>
+          {info.name && (
+            <li>
+              <strong>Name:</strong> {info.name}
+            </li>
           )}
-          <li><strong>Payment:</strong> {getPriceSummary()}</li>
+          {info.phone && (
+            <li>
+              <strong>Phone:</strong> {info.phone}
+            </li>
+          )}
+          {boat && (
+            <li>
+              <strong>Boat:</strong> {boatNames[boat]}
+            </li>
+          )}
+          {bookingType && (
+            <li>
+              <strong>Booking Type:</strong> {bookingType}
+            </li>
+          )}
+          {boat === "Axopar" && departure && (
+            <li>
+              <strong>Departure:</strong> {departure}
+            </li>
+          )}
+          {date && (
+            <li>
+              <strong>Date:</strong> {date.toLocaleDateString()}
+            </li>
+          )}
+          {time && (
+            <li>
+              <strong>Time:</strong> {time}
+            </li>
+          )}
+          {passengers && (
+            <li>
+              <strong>Passengers:</strong> {passengers}
+            </li>
+          )}
+          {showCaptain && (
+            <li>
+              <strong>Captain:</strong> {captain === "yes" ? "Yes" : "No"}
+            </li>
+          )}
+          {bookingType === "Transfer" && (
+            <li>
+              <strong>Transfer:</strong> From {info.transferFrom} to {info.transferTo}
+            </li>
+          )}
+          <li>
+            <strong>Payment:</strong> {getPriceSummary()}
+          </li>
         </ul>
       </div>
+
       {/* Terms & Conditions */}
-<div className="border-t pt-4">
-  <label className="block font-semibold mb-2">Terms & Conditions</label>
-  <div className="border h-40 overflow-y-scroll p-2 text-sm bg-gray-50 whitespace-pre-wrap">
-    By booking, you agree to the following terms:
+      <div className="border-t pt-4">
+        <label className="block font-semibold mb-2">Terms & Conditions</label>
+        <div className="border h-40 overflow-y-scroll p-2 text-sm bg-gray-50 whitespace-pre-wrap">
+          By booking, you agree to the following terms:
 
-    - You have read the full Terms & Conditions PDF available below.
-    - Cancellations must be made at least 48 hours in advance to receive a refund of your deposit.
-      No refund will be issued for cancellations made within 48 hours, unless cancellation is due to weather conditions.
-    - You are responsible for any damage caused during your rental.
-      A €500 damage hold will apply upon discovery of damage. Additional costs beyond €500 will be charged.
-    - All charters are subject to safe weather and sea conditions.
-    - Axis Global Inc. is not liable for accidents, injuries, or loss of life during the rental or transfer.
-    - Greek jurisdiction applies. Address: Elpidos 17, Varkiza, Greece 16672.
-  </div>
-  <div className="flex items-center mt-2 space-x-2">
-    <input
-      type="checkbox"
-      id="agree"
-      checked={info.agreed || false}
-      onChange={(e) => {
-        setInfo({ ...info, agreed: e.target.checked, agreementTimestamp: new Date().toISOString() });
-      }}
-    />
-    <label htmlFor="agree" className="text-sm">
-      I have read and agree to the Terms & Conditions.
-    </label>
-  </div>
-  <div className="text-sm text-blue-600 mt-1">
-    <a href="/Axis_Global_Charter_Terms_Full_Revised.pdf" target="_blank" rel="noopener noreferrer" className="underline">
-      Download Full Terms PDF
-    </a>
-  </div>
-</div>
+          - You have read the full Terms & Conditions PDF available below.
+          - Cancellations must be made at least 48 hours in advance to receive a refund of your deposit.
+            No refund will be issued for cancellations made within 48 hours, unless cancellation is due to weather conditions.
+          - You are responsible for any damage caused during your rental.
+            A €500 damage hold will apply upon discovery of damage. Additional costs beyond €500 will be charged.
+          - All charters are subject to safe weather and sea conditions.
+          - Axis Global Inc. is not liable for accidents, injuries, or loss of life during the rental or transfer.
+          - Greek jurisdiction applies. Address: Elpidos 17, Varkiza, Greece 16672.
+        </div>
+        <div className="flex items-center mt-2 space-x-2">
+          <input
+            type="checkbox"
+            id="agree"
+            checked={info.agreed || false}
+            onChange={(e) => {
+              setInfo({
+                ...info,
+                agreed: e.target.checked,
+                agreementTimestamp: new Date().toISOString()
+              });
+            }}
+          />
+          <label htmlFor="agree" className="text-sm">
+            I have read and agree to the Terms & Conditions.
+          </label>
+        </div>
+        <div className="text-sm text-blue-600 mt-1">
+          <a
+            href="/Axis_Global_Charter_Terms_Full_Revised.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            Download Full Terms PDF
+          </a>
+        </div>
+      </div>
 
-{/* Submit Button */}
-<button
-  onClick={handleSubmit}
-  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
->
-  Submit Booking
-</button>
+      {/* Submit Button */}
+      <button
+        onClick={handleSubmit}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+      >
+        Submit Booking
+      </button>
     </div>
   );
 }
