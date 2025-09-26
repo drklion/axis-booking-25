@@ -126,9 +126,14 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       .catch(error => console.error("Error sending email:", error));
   };
 
-  const handleSubmit = () => {
+ const handleSubmit = () => {
   if (!info.name || !info.phone || !info.email) {
     alert("Please fill in your full name, phone, and email before submitting.");
+    return;
+  }
+
+  if (!info.agreed) {
+    alert("You must agree to the Terms & Conditions before submitting.");
     return;
   }
 
