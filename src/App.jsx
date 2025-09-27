@@ -236,8 +236,8 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
 
   const stripeLinks = {
     Axopar: {
-      "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
-      "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
+      "Full Day Charter": "https://buy.stripe.com/bJecN44IZ6zac0G2ebak008",
+      "Half Day Charter": "https://buy.stripe.com/28EcN4grHcXyc0G8Czak009"
     },
     BlueWater170: { any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007" },
     Axopar22:     { any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006" }
