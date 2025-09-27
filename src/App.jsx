@@ -178,69 +178,77 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
 
   // --------------- Submit ----------------
   const handleSubmit = (e) => {
-    e?.preventDefault?.();
-    setTriedSubmit(true);
+  e?.preventDefault?.();
+  setTriedSubmit(true);
 
-    const trim = (s) => (s || "").toString().trim();
-    const name  = trim(info.name);
-    const phone = trim(info.phone);
-    const email = trim(info.email);
-    const tFrom = trim(info.transferFrom);
-    const tTo   = trim(info.transferTo);
+  const trim = (s) => (s || "").toString().trim();
+  const name  = trim(info.name);
+  const phone = trim(info.phone);
+  const email = trim(info.email);
+  const tFrom = trim(info.transferFrom);
+  const tTo   = trim(info.transferTo);
 
-    if (!boat)        { alert("Please choose a boat."); return; }
-    if (!bookingType) { alert("Please choose a booking type."); return; }
-    if (!date)        { alert("Please select a date."); return; }
-    if (!time)        { alert("Please select a time."); return; }
+  // --- Core selections ---
+  if (!boat)        { alert("Please choose a boat."); return; }
+  if (!bookingType) { alert("Please choose a booking type."); return; }
+  if (!date)        { alert("Please select a date."); return; }
+  if (!time)        { alert("Please select a time."); return; }
 
-    if (!name)  { alert("Please enter your full name."); return; }
-    if (!phone) { alert("Please enter your phone number."); return; }
-    if (!email) { alert("Please enter your email address."); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert("Please enter a valid email address."); return;
-    }
+  // --- Axopar requires departure (run this early so the alert actually shows) ---
+  if (boat === "Axopar" && !trim(departure)) {
+    alert("Please select a departure point for the Axopar 37XC.");
+    return;
+  }
 
-    if (!info.agreed) {
-      alert("You must agree to the Terms & Conditions before submitting."); return;
-    }
+  // --- Contact details ---
+  if (!name)  { alert("Please enter your full name."); return; }
+  if (!phone) { alert("Please enter your phone number."); return; }
+  if (!email) { alert("Please enter your email address."); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Please enter a valid email address."); return;
+  }
 
-    if (boat === "Axopar" && !trim(departure)) {
-      alert("Please select a departure point for the Axopar 37XC."); return;
-    }
+  // --- Terms required for ALL booking types ---
+  if (!info.agreed) {
+    alert("You must agree to the Terms & Conditions before submitting."); return;
+  }
 
-    if (bookingType === "Transfer") {
-      if (!tFrom) { alert("Please enter the Transfer From location."); return; }
-      if (!tTo)   { alert("Please enter the Transfer To location."); return; }
-    }
+  // --- Booking-type-specific: Transfers must have from/to ---
+  if (bookingType === "Transfer") {
+    if (!tFrom) { alert("Please enter the Transfer From location."); return; }
+    if (!tTo)   { alert("Please enter the Transfer To location."); return; }
+  }
 
-    if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
-      alert(`Maximum passengers for this boat is ${maxPassengers}.`); return;
-    }
+  // --- Passenger cap (any boat/type) ---
+  if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
+    alert(`Maximum passengers for this boat is ${maxPassengers}.`); return;
+  }
 
-    if (bookingType !== "Transfer" && (boat === "BlueWater170" || boat === "Axopar22")) {
-      const assignedBoat = handleBooking();
-      if (!assignedBoat) return;
-    }
+  // --- Slot assignment ONLY for rental boats and ONLY for charters ---
+  if (bookingType !== "Transfer" && (boat === "BlueWater170" || boat === "Axopar22")) {
+    const assignedBoat = handleBooking();
+    if (!assignedBoat) return; // handleBooking already alerted
+  }
 
-    sendEmail();
-    alert("Booking submitted. Stripe will open in a new tab.");
+  // --- Success path: notify + Stripe ---
+  sendEmail();
+  alert("Booking submitted. Stripe will open in a new tab.");
 
-    const stripeLinks = {
-      Axopar: {
-        "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
-        "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
-      },
-      BlueWater170: { any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007" },
-      Axopar22:     { any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006" }
-    };
-
-    if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
-      window.open(stripeLinks[boat][bookingType], "_blank");
-    } else if (stripeLinks[boat]?.any) {
-      window.open(stripeLinks[boat].any, "_blank");
-    }
+  const stripeLinks = {
+    Axopar: {
+      "Full Day Charter": "https://buy.stripe.com/cNi3cu3EVf5G1m2aKHak003",
+      "Half Day Charter": "https://buy.stripe.com/eVq4gygrH4r25Cig51ak004"
+    },
+    BlueWater170: { any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007" },
+    Axopar22:     { any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006" }
   };
 
+  if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
+    window.open(stripeLinks[boat][bookingType], "_blank");
+  } else if (stripeLinks[boat]?.any) {
+    window.open(stripeLinks[boat].any, "_blank");
+  }
+};
   // --------------- JSX ----------------
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-4">
