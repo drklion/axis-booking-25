@@ -416,7 +416,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
         )}
         <div className="text-sm text-blue-600 mt-1">
           <a
-            href="/Axis_Global_Charter_Terms_Full_Revised.pdf"
+            href="/Axis_Global_Inc_Boat_Rental_Agreement.PDF.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="underline"
