@@ -1,4 +1,4 @@
-import { useState } from "react";
+itimport { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -115,8 +115,8 @@ const handleBooking = () => {
 
     if (boat === "Axopar") {
       return bookingType === "Full Day Charter"
-        ? "€1,200 (50% = €600)"
-        : "€1,100 (50% = €550)";
+        ? "€1,200 (50% deposit = €600)"
+        : "€1,100 (50% deposit = €550)";
     }
 
     return "";
