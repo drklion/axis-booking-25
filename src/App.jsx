@@ -59,34 +59,34 @@ export default function App() {
     return bookings.every(([start, end]) => newEnd <= start || newStart >= end);
   };
 
-  const handleBooking = () => {
-    if (boat === "BlueWater170" || boat === "Axopar22") {
-      if (!time) {
-        alert("Please select a time.");
-        return null;
-      }
-      const duration = bookingType === "Full Day Charter" ? 8 : 4;
-      const [hour, min] = time.split(":").map(Number);
-      const start = hour * 60 + min;
-      const availableBoat = Object.keys(inventory).find((name) =>
-        isTimeSlotAvailable(name, start, duration)
-      );
+  const isTimeSlotAvailable = (boatName, newStart, duration) => {
+  const bookings = inventory[boatName] || [];
+  const newEnd = newStart + duration * 60;
+  return bookings.every(([start, end]) => newEnd <= start || newStart >= end);
+};
 
-      if (availableBoat) {
-        const newEnd = start + duration * 60;
-        setInventory((prev) => ({
-          ...prev,
-          [availableBoat]: [...prev[availableBoat], [start, newEnd]]
-        }));
-        return availableBoat;
-      } else {
-        alert("No available boats at that time.");
-        return null;
-      }
-    }
-    return null; // Axopar 37XC not slot-managed here
-  };
+const handleBooking = () => {
+  if (boat === "BlueWater170" || boat === "Axopar22") {
+    if (!time) { alert("Please select a time."); return null; }
 
+    const duration = bookingType === "Full Day Charter" ? 8 : 4;
+    const [hour, min] = time.split(":").map(Number);
+    const start = hour * 60 + min;
+
+    const availableBoat = Object.keys(inventory).find((name) =>
+      isTimeSlotAvailable(name, start, duration)
+    );
+    if (!availableBoat) { alert("No available boats at that time."); return null; }
+
+    const newEnd = start + duration * 60;
+    setInventory((prev) => ({
+      ...prev,
+      [availableBoat]: [...prev[availableBoat], [start, newEnd]]
+    }));
+    return availableBoat;
+  }
+  return "OK"; // non-slot-managed boats
+};
   const getPriceSummary = () => {
     if (!boat) return "";
     if (bookingType === "Transfer") return "Contact for further info";
@@ -180,10 +180,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
   };
 
   // --------------- Submit ----------------
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+  e?.preventDefault?.();
   setTriedSubmit(true);
 
-  // Trimmed values
+  // --- Trimmed values ---
   const trim = (s) => (s || "").toString().trim();
   const name  = trim(info.name);
   const phone = trim(info.phone);
@@ -191,82 +192,49 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
   const tFrom = trim(info.transferFrom);
   const tTo   = trim(info.transferTo);
 
-  // --- Core selections first ---
-  if (!boat) {
-    alert("Please choose a boat.");
-    return;
-  }
-  if (!bookingType) {
-    alert("Please choose a booking type.");
-    return;
-  }
-  if (!date) {
-    alert("Please select a date.");
-    return;
-  }
-  if (!time) {
-    alert("Please select a time.");
-    return;
-  }
+  // --- Validate core selections (boat/type/date/time) ---
+  if (!boat)        { alert("Please choose a boat."); return; }
+  if (!bookingType) { alert("Please choose a booking type."); return; }
+  if (!date)        { alert("Please select a date."); return; }
+  if (!time)        { alert("Please select a time."); return; }
 
   // --- Contact details (field-specific) ---
-  if (!name) {
-    alert("Please enter your full name.");
-    return;
-  }
-  if (!phone) {
-    alert("Please enter your phone number.");
-    return;
-  }
-  if (!email) {
-    alert("Please enter your email address.");
-    return;
-  }
-  // light email format check
+  if (!name)  { alert("Please enter your full name."); return; }
+  if (!phone) { alert("Please enter your phone number."); return; }
+  if (!email) { alert("Please enter your email address."); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert("Please enter a valid email address.");
-    return;
+    alert("Please enter a valid email address."); return;
   }
 
   // --- Terms required for ALL booking types ---
   if (!info.agreed) {
-    alert("You must agree to the Terms & Conditions before submitting.");
-    return;
+    alert("You must agree to the Terms & Conditions before submitting."); return;
   }
 
-  // --- Boat-specific requirements ---
-  // Axopar (37XC) requires a departure point for any charter type (Full/Half/Transfer)
+  // --- Boat-specific: Axopar 37XC requires a departure point ---
   if (boat === "Axopar" && !trim(departure)) {
-    alert("Please select a departure point for the Axopar 37XC.");
-    return;
+    alert("Please select a departure point for the Axopar 37XC."); return;
   }
 
-  // --- Booking-type-specific requirements ---
+  // --- Booking-type-specific: Transfers must have from/to ---
   if (bookingType === "Transfer") {
-    if (!tFrom) {
-      alert("Please enter the Transfer From location.");
-      return;
-    }
-    if (!tTo) {
-      alert("Please enter the Transfer To location.");
-      return;
-    }
+    if (!tFrom) { alert("Please enter the Transfer From location."); return; }
+    if (!tTo)   { alert("Please enter the Transfer To location."); return; }
   }
 
-  // --- Passenger cap (applies to any booking type) ---
+  // --- Passenger cap (any boat/type) ---
   if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
-    alert(`Maximum passengers for this boat is ${maxPassengers}.`);
-    return;
+    alert(`Maximum passengers for this boat is ${maxPassengers}.`); return;
   }
 
-  // --- Slot assignment for rental boats (BlueWater170/Axopar22) ---
-  const assignedBoat = handleBooking();
-  if (!assignedBoat && (boat === "BlueWater170" || boat === "Axopar22")) {
-    // handleBooking already alerted; just stop here
-    return;
+  // --- Slot assignment ONLY for rental boats and ONLY for charters ---
+  // (BlueWater170 & Axopar22 use inventory for Half/Full Day. Transfers skip slotting.)
+  if (bookingType !== "Transfer" && (boat === "BlueWater170" || boat === "Axopar22")) {
+    const assignedBoat = handleBooking();
+    if (!assignedBoat) return; // handleBooking already alerted
   }
 
-  // --- Success path: notify + open Stripe ---
+  // --- Success path: notify + Stripe ---
   sendEmail();
   alert("Booking submitted. Stripe will open in a new tab.");
 
@@ -281,11 +249,10 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
 
   if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
     window.open(stripeLinks[boat][bookingType], "_blank");
-  } else if (stripeLinks[boat] && stripeLinks[boat].any) {
+  } else if (stripeLinks[boat]?.any) {
     window.open(stripeLinks[boat].any, "_blank");
   }
 };
-
   // --------------- JSX ----------------
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-4">
