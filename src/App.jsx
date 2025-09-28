@@ -67,7 +67,6 @@ export default function App() {
       const [hour, min] = time.split(":").map(Number);
       const start = hour * 60 + min;
 
-      // Only check the selected boat's inventory
       const boatKey = boat;
       if (!isTimeSlotAvailable(boatKey, start, duration)) {
         alert("No available boats at that time.");
@@ -153,105 +152,83 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       .catch((error) => console.error("Error sending email:", error));
   };
 
-  // --------------- UI helpers ----------------
-  const generateTimeOptions = () => {
-    const options = [];
-    for (let h = 8; h <= 12; h++) {
-      options.push(`${String(h).padStart(2, "0")}:00`);
-      if (h < 12) options.push(`${String(h).padStart(2, "0")}:30`);
-    }
-    return options;
-  };
-
-  const generatePassengerOptions = () => {
-    const limit = maxPassengers || 8;
-    const options = [];
-    for (let i = 1; i <= limit; i++) {
-      options.push(
-        <option key={i} value={i}>
-          {i}
-        </option>
-      );
-    }
-    return options;
-  };
-
   // --------------- Submit ----------------
   const handleSubmit = (e) => {
-  e?.preventDefault?.();
-  setTriedSubmit(true);
+    e?.preventDefault?.();
+    setTriedSubmit(true);
 
-  const trim = (s) => (s || "").toString().trim();
-  const name  = trim(info.name);
-  const phone = trim(info.phone);
-  const email = trim(info.email);
-  const tFrom = trim(info.transferFrom);
-  const tTo   = trim(info.transferTo);
+    const trim = (s) => (s || "").toString().trim();
+    const name  = trim(info.name);
+    const phone = trim(info.phone);
+    const email = trim(info.email);
+    const tFrom = trim(info.transferFrom);
+    const tTo   = trim(info.transferTo);
 
-  // --- Core selections ---
-  if (!boat)        { alert("Please choose a boat."); return; }
-  if (!bookingType) { alert("Please choose a booking type."); return; }
-  if (!date)        { alert("Please select a date."); return; }
-  if (!time)        { alert("Please select a time."); return; }
+    // --- Core selections ---
+    if (!boat)        { alert("Please choose a boat."); return; }
+    if (!bookingType) { alert("Please choose a booking type."); return; }
+    if (!date)        { alert("Please select a date."); return; }
+    if (!time)        { alert("Please select a time."); return; }
 
-  // --- Axopar requires departure (run this early so the alert actually shows) ---
-  if (boat === "Axopar" && !trim(departure)) {
-    alert("Please select a departure point for the Axopar 37XC.");
-    return;
-  }
+    // --- Axopar requires departure (checked EARLY) ---
+    if (boat === "Axopar" && !trim(departure)) {
+      alert("Please select a departure point for the Axopar 37XC.");
+      return;
+    }
 
-  // --- Contact details ---
-  if (!name)  { alert("Please enter your full name."); return; }
-  if (!phone) { alert("Please enter your phone number."); return; }
-  if (!email) { alert("Please enter your email address."); return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert("Please enter a valid email address."); return;
-  }
+    // --- Contact details ---
+    if (!name)  { alert("Please enter your full name."); return; }
+    if (!phone) { alert("Please enter your phone number."); return; }
+    if (!email) { alert("Please enter your email address."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert("Please enter a valid email address."); return;
+    }
 
-  // --- Terms required for ALL booking types ---
-  if (!info.agreed) {
-    alert("You must agree to the Terms & Conditions before submitting."); return;
-  }
+    // --- Terms required for ALL booking types ---
+    if (!info.agreed) {
+      alert("You must agree to the Terms & Conditions before submitting."); return;
+    }
 
-  // --- Booking-type-specific: Transfers must have from/to ---
-  if (bookingType === "Transfer") {
-    if (!tFrom) { alert("Please enter the Transfer From location."); return; }
-    if (!tTo)   { alert("Please enter the Transfer To location."); return; }
-  }
+    // --- Booking-type-specific: Transfers must have from/to ---
+    if (bookingType === "Transfer") {
+      if (!tFrom) { alert("Please enter the Transfer From location."); return; }
+      if (!tTo)   { alert("Please enter the Transfer To location."); return; }
+    }
 
-  // --- Passenger cap (any boat/type) ---
-  if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
-    alert(`Maximum passengers for this boat is ${maxPassengers}.`); return;
-  }
+    // --- Passenger cap (any boat/type) ---
+    if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
+      alert(`Maximum passengers for this boat is ${maxPassengers}.`); return;
+    }
 
-  // --- Slot assignment ONLY for rental boats and ONLY for charters ---
-  if (bookingType !== "Transfer" && (boat === "BlueWater170" || boat === "Axopar22")) {
-    const assignedBoat = handleBooking();
-    if (!assignedBoat) return; // handleBooking already alerted
-  }
+    // --- Slot assignment ONLY for rental boats and ONLY for charters ---
+    if (bookingType !== "Transfer" && (boat === "BlueWater170" || boat === "Axopar22")) {
+      const assignedBoat = handleBooking();
+      if (!assignedBoat) return; // handleBooking already alerted
+    }
 
-  // --- Success path: notify + Stripe ---
-  sendEmail();
-  alert("Booking submitted. Stripe will open in a new tab.");
+    // --- Success path: notify + Stripe ---
+    sendEmail();
+    alert("Booking submitted. Stripe will open in a new tab.");
 
-  const stripeLinks = {
-    Axopar: {
-      "Full Day Charter": "https://buy.stripe.com/bJecN44IZ6zac0G2ebak008",
-      "Half Day Charter": "https://buy.stripe.com/28EcN4grHcXyc0G8Czak009"
-    },
-    BlueWater170: { any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007" },
-    Axopar22:     { any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006" }
+    const stripeLinks = {
+      Axopar: {
+        "Full Day Charter": "https://buy.stripe.com/bJecN44IZ6zac0G2ebak008",
+        "Half Day Charter": "https://buy.stripe.com/28EcN4grHcXyc0G8Czak009"
+      },
+      BlueWater170: { any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007" },
+      Axopar22:     { any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006" }
+    };
+
+    if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
+      window.open(stripeLinks[boat][bookingType], "_blank");
+    } else if (stripeLinks[boat]?.any) {
+      window.open(stripeLinks[boat].any, "_blank");
+    }
   };
 
-  if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
-    window.open(stripeLinks[boat][bookingType], "_blank");
-  } else if (stripeLinks[boat]?.any) {
-    window.open(stripeLinks[boat].any, "_blank");
-  }
-};
   // --------------- JSX ----------------
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-4">
+    <form onSubmit={handleSubmit} className="p-4 max-w-4xl mx-auto space-y-4">
       <div className="text-center">
         <h1 className="text-2xl font-bold mb-2">Axis Yacht Charters</h1>
         <p className="text-lg italic">Free to Explore</p>
@@ -283,14 +260,21 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       {boat === "Axopar" && (
         <div>
           <label className="block font-semibold mb-1">Departure Point:</label>
-          <select value={departure} onChange={(e) => setDeparture(e.target.value)} className={inputClass}>
-            <option value="">Select departure point</option>
+          <select
+            value={departure}
+            onChange={(e) => setDeparture(e.target.value)}
+            className={inputClass}
+          >
+            <option value="" disabled>Select departure point</option>
             <option value="Loutraki, Skopelos">Loutraki, Skopelos</option>
             <option value="Skopelos Town">Skopelos Town</option>
             <option value="Skiathos">Skiathos</option>
             <option value="Varkiza, Athens">Varkiza, Athens</option>
             <option value="Other">Other</option>
           </select>
+          {triedSubmit && !departure && (
+            <p className="text-red-600 text-sm mt-1">Please choose a departure point.</p>
+          )}
         </div>
       )}
 
@@ -436,16 +420,11 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
 
       {/* Submit Button */}
       <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          handleSubmit(e);
-        }}
+        type="submit"
         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
       >
         Submit Booking
       </button>
-    </div>
+    </form>
   );
 }
-
