@@ -2,10 +2,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const initialInventory = {
-  BlueWater170: [],
-  Axopar22: []
-};
+const initialInventory = { BlueWater170: [], Axopar22: [] };
 
 export default function App() {
   const today = new Date();
@@ -126,13 +123,9 @@ Passengers: ${passengers}
 Captain: ${showCaptain ? (captain === "yes" ? "Yes" : "No") : "Included"}
 Departure: ${boat === "Axopar" ? departure : "N/A"}
 Payment: ${getPriceSummary()}
-Transfer: ${
-      bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"
-    }
+Transfer: ${bookingType === "Transfer" ? `From ${info.transferFrom} to ${info.transferTo}` : "N/A"}
 Agreed Terms: ${info.agreed ? `Yes at ${info.agreementTimestamp}` : "No"}
-Address: ${[info.country, info.address, info.city, info.state, info.zip]
-      .filter(Boolean)
-      .join(" ")}`;
+Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(Boolean).join(" ")}`;
 
     fetch("https://formsubmit.co/ajax/info@axisyachtcharters.com", {
       method: "POST",
@@ -144,24 +137,17 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       .catch((err) => console.error("Error sending email:", err));
   };
 
-  // --- UI helpers (these MUST be above the return) ---
-  const generateTimeOptions = () => {
-    const options = [];
+  // ---------- Inline options (no helper functions) ----------
+  const timeOptions = (() => {
+    const arr = [];
     for (let h = 8; h <= 12; h++) {
-      options.push(`${String(h).padStart(2, "0")}:00`);
-      if (h < 12) options.push(`${String(h).padStart(2, "0")}:30`);
+      arr.push(`${String(h).padStart(2, "0")}:00`);
+      if (h < 12) arr.push(`${String(h).padStart(2, "0")}:30`);
     }
-    return options;
-  };
+    return arr;
+  })();
 
-  const generatePassengerOptions = () => {
-    const limit = maxPassengers || 8;
-    const opts = [];
-    for (let i = 1; i <= limit; i++) {
-      opts.push(<option key={i} value={i}>{i}</option>);
-    }
-    return opts;
-  };
+  const passengerOptions = Array.from({ length: maxPassengers || 8 }, (_, i) => i + 1);
 
   // --------------- Submit ----------------
   const handleSubmit = (e) => {
@@ -328,7 +314,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
           <label className="block font-semibold mb-1">Select Time:</label>
           <select value={time} onChange={(e) => setTime(e.target.value)} className={inputClass}>
             <option value="">Select Time</option>
-            {generateTimeOptions().map((t) => (
+            {timeOptions.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
@@ -340,7 +326,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
         <div>
           <label className="block font-semibold mb-1">Passengers:</label>
           <select value={passengers} onChange={(e) => setPassengers(e.target.value)} className={inputClass}>
-            {generatePassengerOptions()}
+            {passengerOptions.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
           </select>
           <small className="text-xs text-gray-500">Max {maxPassengers} passengers</small>
         </div>
@@ -428,10 +416,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
       </div>
 
       {/* Submit Button */}
-      <button
-        type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-      >
+      <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Submit Booking
       </button>
     </form>
