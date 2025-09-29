@@ -2,6 +2,23 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+// ---- SAFETY HELPERS (exist even if old JSX still calls them) ----
+const generateTimeOptions = () => {
+  const arr = [];
+  for (let h = 8; h <= 12; h++) {
+    arr.push(`${String(h).padStart(2, "0")}:00`);
+    if (h < 12) arr.push(`${String(h).padStart(2, "0")}:30`);
+  }
+  return arr;
+};
+const generatePassengerOptions = (max = 8) => {
+  const opts = [];
+  for (let i = 1; i <= max; i++) {
+    opts.push(<option key={i} value={i}>{i}</option>);
+  }
+  return opts;
+};
+
 const initialInventory = { BlueWater170: [], Axopar22: [] };
 
 export default function App() {
@@ -77,7 +94,7 @@ export default function App() {
       }));
       return boatKey;
     }
-    return "OK"; // non-slot-managed boats
+    return "OK";
   };
 
   const getPriceSummary = () => {
@@ -137,7 +154,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       .catch((err) => console.error("Error sending email:", err));
   };
 
-  // ---------- Inline options (no helper functions) ----------
+  // ---------- Inline options (used by this component) ----------
   const timeOptions = (() => {
     const arr = [];
     for (let h = 8; h <= 12; h++) {
@@ -146,7 +163,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     }
     return arr;
   })();
-
   const passengerOptions = Array.from({ length: maxPassengers || 8 }, (_, i) => i + 1);
 
   // --------------- Submit ----------------
@@ -161,19 +177,16 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     const tFrom = trim(info.transferFrom);
     const tTo   = trim(info.transferTo);
 
-    // --- Core selections ---
     if (!boat)        { alert("Please choose a boat."); return; }
     if (!bookingType) { alert("Please choose a booking type."); return; }
     if (!date)        { alert("Please select a date."); return; }
     if (!time)        { alert("Please select a time."); return; }
 
-    // --- Axopar requires departure (checked EARLY) ---
     if (boat === "Axopar" && !trim(departure)) {
       alert("Please select a departure point for the Axopar 37XC.");
       return;
     }
 
-    // --- Contact details ---
     if (!name)  { alert("Please enter your full name."); return; }
     if (!phone) { alert("Please enter your phone number."); return; }
     if (!email) { alert("Please enter your email address."); return; }
@@ -181,29 +194,24 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       alert("Please enter a valid email address."); return;
     }
 
-    // --- Terms required for ALL booking types ---
     if (!info.agreed) {
       alert("You must agree to the Terms & Conditions before submitting."); return;
     }
 
-    // --- Booking-type-specific: Transfers must have from/to ---
     if (bookingType === "Transfer") {
       if (!tFrom) { alert("Please enter the Transfer From location."); return; }
       if (!tTo)   { alert("Please enter the Transfer To location."); return; }
     }
 
-    // --- Passenger cap (any boat/type) ---
     if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
       alert(`Maximum passengers for this boat is ${maxPassengers}.`); return;
     }
 
-    // --- Slot assignment ONLY for rental boats and ONLY for charters ---
     if (bookingType !== "Transfer" && (boat === "BlueWater170" || boat === "Axopar22")) {
       const assignedBoat = handleBooking();
-      if (!assignedBoat) return; // handleBooking already alerted
+      if (!assignedBoat) return;
     }
 
-    // --- Success path: notify + Stripe ---
     sendEmail();
     alert("Booking submitted. Stripe will open in a new tab.");
 
@@ -223,10 +231,10 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     }
   };
 
-  // --------------- JSX ----------------
   return (
     <form onSubmit={handleSubmit} className="p-4 max-w-4xl mx-auto space-y-4">
       <div className="text-center">
+        <div data-build="AXIS-BUILD-42" className="text-xs text-gray-500">BUILD: AXIS-BUILD-42</div>
         <h1 className="text-2xl font-bold mb-2">Axis Yacht Charters</h1>
         <p className="text-lg italic">Free to Explore</p>
       </div>
@@ -272,17 +280,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
           {triedSubmit && !departure && (
             <p className="text-red-600 text-sm mt-1">Please choose a departure point.</p>
           )}
-        </div>
-      )}
-
-      {/* Captain Option (only BlueWater and Axopar22) */}
-      {showCaptain && (
-        <div>
-          <label className="block font-semibold mb-1">Captain:</label>
-          <select value={captain} onChange={(e) => setCaptain(e.target.value)} className={inputClass}>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
         </div>
       )}
 
@@ -415,7 +412,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       </div>
 
-      {/* Submit Button */}
       <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Submit Booking
       </button>
