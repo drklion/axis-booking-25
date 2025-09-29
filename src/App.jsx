@@ -185,7 +185,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   // --------------- JSX ----------------
   return (
     <form onSubmit={handleSubmit} className="axis-form">
-      <div style={{ fontSize: 12, color: "#64748b" }}>BUILD: FINAL-STACKED</div>
       <h1 className="axis-title">Axis Yacht Charters</h1>
       <p className="axis-sub">Free to Explore</p>
 
