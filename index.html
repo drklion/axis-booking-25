@@ -5,29 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Axis Booking</title>
     <style>
-      /* temporary so you don't stare at pure white while JS loads */
       #root { padding: 16px; font-family: system-ui, sans-serif; }
     </style>
   </head>
   <body>
     <div id="root">Loading…</div>
     <script type="module" src="/src/main.jsx"></script>
-    <script>
-      // show non-React errors on the page
-      window.addEventListener('error', e => {
-        const pre = document.createElement('pre');
-        pre.textContent = 'JS error: ' + (e.error?.message || e.message);
-        pre.style.whiteSpace = 'pre-wrap';
-        pre.style.color = 'crimson';
-        document.body.prepend(pre);
-      });
-      window.addEventListener('unhandledrejection', e => {
-        const pre = document.createElement('pre');
-        pre.textContent = 'Promise error: ' + (e.reason?.message || e.reason);
-        pre.style.whiteSpace = 'pre-wrap';
-        pre.style.color = 'crimson';
-        document.body.prepend(pre);
-      });
-    </script>
   </body>
 </html>
