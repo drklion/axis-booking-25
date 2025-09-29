@@ -91,7 +91,6 @@ export default function App() {
     if (month === null) return "Select a date";
 
     if (boat === "Axopar22") {
-      // Jan–Dec (12 values)
       const fullPrices = [200, 200, 200, 225, 250, 250, 250, 250, 200, 0, 0, 0];
       const halfPrices = [150, 150, 150, 175, 200, 200, 200, 200, 150, 0, 0, 0];
       const basePrice =
@@ -137,19 +136,31 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
 
     fetch("https://formsubmit.co/ajax/info@axisyachtcharters.com", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-      },
-      body: JSON.stringify({
-        name: info.name,
-        email: info.email,
-        message: summary
-      })
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ name: info.name, email: info.email, message: summary })
     })
-      .then((response) => response.json())
+      .then((r) => r.json())
       .then((data) => console.log("Email sent:", data))
-      .catch((error) => console.error("Error sending email:", error));
+      .catch((err) => console.error("Error sending email:", err));
+  };
+
+  // --- UI helpers (these MUST be above the return) ---
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let h = 8; h <= 12; h++) {
+      options.push(`${String(h).padStart(2, "0")}:00`);
+      if (h < 12) options.push(`${String(h).padStart(2, "0")}:30`);
+    }
+    return options;
+  };
+
+  const generatePassengerOptions = () => {
+    const limit = maxPassengers || 8;
+    const opts = [];
+    for (let i = 1; i <= limit; i++) {
+      opts.push(<option key={i} value={i}>{i}</option>);
+    }
+    return opts;
   };
 
   // --------------- Submit ----------------
@@ -318,9 +329,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip]
           <select value={time} onChange={(e) => setTime(e.target.value)} className={inputClass}>
             <option value="">Select Time</option>
             {generateTimeOptions().map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
+              <option key={t} value={t}>{t}</option>
             ))}
           </select>
         </div>
