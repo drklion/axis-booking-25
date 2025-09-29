@@ -305,7 +305,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
         {triedSubmit && !info.agreed && <p className="axis-error">You must agree to the Terms & Conditions before submitting.</p>}
         <div style={{ fontSize: 14, marginTop: 4 }}>
-          <a href="/Axis_Global_Inc_Boat_Rental_Agreement.PDF.pdf" target="_blank" rel="noopener noreferrer" className="axis-link">
+          <a href="/Axis_Global_Inc_Boat_Rental_Agreement.pdf" target="_blank" rel="noopener noreferrer" className="axis-link">
             Download Full Terms PDF
           </a>
         </div>
