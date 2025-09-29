@@ -1,13 +1,12 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 const initialInventory = { BlueWater170: [], Axopar22: [] };
 
 export default function App() {
   const today = new Date();
 
-  // State
+  // ---------------- State ----------------
   const [boat, setBoat] = useState("");
   const [bookingType, setBookingType] = useState("");
   const [date, setDate] = useState(null);
@@ -24,7 +23,7 @@ export default function App() {
   });
   const [inventory, setInventory] = useState(initialInventory);
 
-  // Config
+  // --------------- Config ----------------
   const boatNames = {
     Axopar: "Axopar 37XC 11.7 Meter (w/Captain)",
     Axopar22: "Axopar 22 T-Top",
@@ -33,10 +32,9 @@ export default function App() {
   const showCaptain = boat === "BlueWater170" || boat === "Axopar22";
   const showTransferFields = bookingType === "Transfer";
   const maxPassengers = boat === "Axopar" ? 8 : boat === "BlueWater170" ? 7 : boat === "Axopar22" ? 5 : 8;
-
   const inputClass = "axis-input";
 
-  // Helpers
+  // --------------- Helpers ----------------
   const isTimeSlotAvailable = (boatName, newStart, duration) => {
     const bookings = inventory[boatName] || [];
     const newEnd = newStart + duration * 60;
@@ -81,9 +79,7 @@ export default function App() {
       return `€${captain === "yes" ? base + 100 : base} (€50 Fixed Deposit)`;
     }
     if (boat === "Axopar") {
-      return bookingType === "Full Day Charter"
-        ? "€1,200 (50% deposit = €600)"
-        : "€1,100 (50% deposit = €550)";
+      return bookingType === "Full Day Charter" ? "€1,200 (50% deposit = €600)" : "€1,100 (50% deposit = €550)";
     }
     return "";
   };
@@ -111,7 +107,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
       .catch(err => console.error("Error sending email:", err));
   };
 
-  // Inline options (no helpers needed)
+  // Inline options
   const timeOptions = (() => {
     const arr = [];
     for (let h = 8; h <= 12; h++) {
@@ -126,6 +122,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   const handleSubmit = (e) => {
     e?.preventDefault?.();
     setTriedSubmit(true);
+    console.log("handleSubmit fired");
 
     const trim = (s) => (s || "").toString().trim();
     const name  = trim(info.name);
@@ -185,16 +182,13 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     }
   };
 
-  // JSX
+  // --------------- JSX ----------------
   return (
     <form onSubmit={handleSubmit} className="axis-form">
-      <div className="text-center">
-        <div style={{ fontSize: 12, color: "#64748b" }}>BUILD: PLAIN-CSS</div>
-        <h1>Axis Yacht Charters</h1>
-        <p className="subtitle">Free to Explore</p>
-      </div>
+      <div style={{ fontSize: 12, color: "#64748b" }}>BUILD: FINAL-STACKED</div>
+      <h1 className="axis-title">Axis Yacht Charters</h1>
+      <p className="axis-sub">Free to Explore</p>
 
-      {/* Boat Selection */}
       <div>
         <label className="axis-label">Choose a Boat:</label>
         <select value={boat} onChange={(e) => setBoat(e.target.value)} className={inputClass}>
@@ -205,7 +199,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </select>
       </div>
 
-      {/* Booking Type */}
       <div>
         <label className="axis-label">Booking Type:</label>
         <select value={bookingType} onChange={(e) => setBookingType(e.target.value)} className={inputClass}>
@@ -216,7 +209,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </select>
       </div>
 
-      {/* Departure (Axopar only) */}
       {boat === "Axopar" && (
         <div>
           <label className="axis-label">Departure Point:</label>
@@ -228,13 +220,10 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
             <option value="Varkiza, Athens">Varkiza, Athens</option>
             <option value="Other">Other</option>
           </select>
-          {triedSubmit && !departure && (
-            <p className="axis-error">Please choose a departure point.</p>
-          )}
+          {triedSubmit && !departure && <p className="axis-error">Please choose a departure point.</p>}
         </div>
       )}
 
-      {/* Transfer fields */}
       {showTransferFields && (
         <div className="axis-grid">
           <input placeholder="Transfer From" value={info.transferFrom} onChange={(e) => setInfo({ ...info, transferFrom: e.target.value })} className={inputClass} />
@@ -242,7 +231,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       )}
 
-      {/* Date + Time */}
       <div className="axis-grid">
         <div>
           <label className="axis-label">Select Date:</label>
@@ -257,16 +245,14 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       </div>
 
-      {/* Passengers */}
       <div>
         <label className="axis-label">Passengers:</label>
         <select value={passengers} onChange={(e) => setPassengers(e.target.value)} className={inputClass}>
-          {passengerOptions.map((n) => <option key={n} value={n}>{n}</option>)}
+          {Array.from({ length: maxPassengers || 8 }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n}</option>)}
         </select>
         <div className="axis-note">Max {maxPassengers} passengers</div>
       </div>
 
-      {/* Contact Details */}
       <div className="axis-grid">
         <input placeholder="Full Name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} className={inputClass} />
         <input placeholder="Phone" value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className={inputClass} />
@@ -278,10 +264,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         <input placeholder="ZIP" value={info.zip} onChange={(e) => setInfo({ ...info, zip: e.target.value })} className={inputClass} />
       </div>
 
-      {/* Booking Summary */}
       <div className="axis-section">
         <p style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Booking Summary</p>
-        <ul className="axis-list">
+        <ul>
           {info.name && <li><strong>Name:</strong> {info.name}</li>}
           {info.phone && <li><strong>Phone:</strong> {info.phone}</li>}
           {boat && <li><strong>Boat:</strong> {boatNames[boat]}</li>}
@@ -296,7 +281,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </ul>
       </div>
 
-      {/* Terms & Conditions */}
       <div className="axis-section">
         <label className="axis-label">Terms & Conditions</label>
         <div style={{ border: "1px solid #e5e7eb", height: 160, overflowY: "auto", padding: 8, fontSize: 14, background: "#f8fafc", whiteSpace: "pre-wrap" }}>
@@ -328,7 +312,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       </div>
 
-      <button type="submit" className="axis-submit">Submit Booking</button>
+      <button type="submit" className="axis-submit" onClick={handleSubmit}>
+        Submit Booking
+      </button>
     </form>
   );
 }
