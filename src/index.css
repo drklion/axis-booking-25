@@ -1,3 +1,28 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Basic */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+/* Form container */
+.axis-form { max-width: 64rem; margin: 0 auto; padding: 16px; }
+
+/* Headings */
+.axis-form h1 { font-size: 2rem; margin: 0 0 8px; }
+.subtitle { font-style: italic; margin-bottom: 16px; }
+
+/* Labels & inputs */
+.axis-label { display: block; font-weight: 600; margin-bottom: 4px; }
+.axis-input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
+
+/* Responsive two-column grid */
+.axis-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 640px) { .axis-grid { grid-template-columns: 1fr 1fr; } }
+
+/* Sections */
+.axis-section { border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 16px; }
+.axis-note { font-size: 12px; color: #64748b; }
+.axis-error { color: #dc2626; font-size: 12px; margin-top: 4px; }
+
+/* Button & link */
+.axis-submit { background: #2563eb; color: #fff; border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; }
+.axis-submit:hover { background: #1d4ed8; }
+.axis-link { color: #2563eb; text-decoration: underline; }
