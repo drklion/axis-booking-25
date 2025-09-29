@@ -1,19 +1,19 @@
-/* Basic */
+/* Basic reset */
 * { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
 
-/* Form container */
+/* Container */
 .axis-form { max-width: 64rem; margin: 0 auto; padding: 16px; }
 
 /* Headings */
-.axis-form h1 { font-size: 2rem; margin: 0 0 8px; }
-.subtitle { font-style: italic; margin-bottom: 16px; }
+.axis-title { font-size: 2rem; font-weight: 700; margin: 0 0 8px; }
+.axis-sub { font-style: italic; margin-bottom: 16px; }
 
 /* Labels & inputs */
 .axis-label { display: block; font-weight: 600; margin-bottom: 4px; }
 .axis-input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
 
-/* Responsive two-column grid */
+/* Grid for two-column areas */
 .axis-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
 @media (min-width: 640px) { .axis-grid { grid-template-columns: 1fr 1fr; } }
 
