@@ -311,9 +311,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       </div>
 
-      <button type="submit" className="axis-submit" onClick={handleSubmit}>
-        Submit Booking
-      </button>
+      <button type="submit" className="axis-submit">
+  Submit Booking
+</button>
     </form>
   );
 }
