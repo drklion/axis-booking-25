@@ -19,3 +19,9 @@ body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ari
 .axis-submit { background: #2563eb; color: #fff; border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; }
 .axis-submit:hover { background: #1d4ed8; }
 .axis-link { color: #2563eb; text-decoration: underline; }
+
+.axis-form {
+  background-color: #e6f3ff; /* light blue */
+  padding: 20px;
+  border-radius: 12px;
+}
