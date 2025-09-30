@@ -25,3 +25,7 @@ body {
   margin: 0;                /* remove default margins */
   font-family: Arial, sans-serif; /* optional, for a clean look */
 }
+.axis-link {
+  display: inline-block;
+  margin-bottom: 16px;
+}
