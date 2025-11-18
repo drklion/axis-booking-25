@@ -235,7 +235,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
 };
   // --------------- JSX ----------------
   return (
-    <form onSubmit={handleSubmit} className="axis-form">
+    <div className="axis-form">
       <h1 className="axis-title">Axis Yacht Charters</h1>
       <p className="axis-sub">Free to Explore</p>
 
@@ -362,9 +362,17 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         </div>
       </div>
 
-      <button type="submit" className="axis-submit">
-  Submit Booking
-</button>
-    </form>
+      <button
+        type="button"
+        className="axis-submit"
+        onClick={handleSubmit}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          handleSubmit(e);
+        }}
+      >
+        Submit Booking
+      </button>
+    </div>
   );
 }
