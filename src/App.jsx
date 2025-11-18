@@ -121,7 +121,9 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   // Submit
  const handleSubmit = (e) => {
   e?.preventDefault?.();
-  setTriedSubmit(true);
+
+  // Debug so we know iPhone really fired this
+  alert("DEBUG: handleSubmit called");
 
   const trim = (s) => (s || "").toString().trim();
 
@@ -130,9 +132,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   const email = trim(info.email);
   const tFrom = trim(info.transferFrom);
   const tTo   = trim(info.transferTo);
-
-  // Debug – proves the handler is actually firing on iPhone
-  console.log("SUBMIT PRESSED");
 
   // 1) BASIC CHOICES
   if (!boat) {
@@ -160,7 +159,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     return;
   }
 
-  // 2) CONTACT INFO – these SHOULD block you if empty
+  // 2) CONTACT INFO
   if (!name) {
     alert("Please enter your full name.");
     return;
@@ -181,7 +180,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     return;
   }
 
-  // 3) TERMS – this check comes AFTER the name/phone/email checks
+  // 3) TERMS – AFTER name/phone/email
   if (!info.agreed) {
     alert("You must agree to the Terms & Conditions before submitting.");
     return;
@@ -205,18 +204,18 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     return;
   }
 
-  // 6) AVAILABILITY FOR RENTALS
+  // 6) AVAILABILITY FOR RENTALS (still keep this logic)
   if (
     bookingType !== "Transfer" &&
     (boat === "BlueWater170" || boat === "Axopar22")
   ) {
     const assignedBoat = handleBooking();
-    if (!assignedBoat) return; // clash => handleBooking already alerted
+    if (!assignedBoat) return;
   }
 
-  // 7) EMAIL + STRIPE
-  sendEmail();
-  alert("Booking submitted. Stripe will open in a new tab.");
+  // 7) SUCCESS – NO STRIPE, NO EMAIL YET
+  alert("All good – form is valid. (Test build, no Stripe / email)");
+};
 
   const stripeLinks = {
     Axopar: {
@@ -235,9 +234,10 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
 };
   // --------------- JSX ----------------
   return (
-    <div className="axis-form">
-      <h1 className="axis-title">Axis Yacht Charters</h1>
-      <p className="axis-sub">Free to Explore</p>
+  <div className="axis-form">
+    <h1 className="axis-title">Axis Yacht Charters</h1>
+    <p className="axis-sub">Free to Explore</p>
+    {/* ...rest of your fields... */}
 
       <div>
         <label className="axis-label">Choose a Boat:</label>
@@ -366,10 +366,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
         type="button"
         className="axis-submit"
         onClick={handleSubmit}
-        onTouchEnd={(e) => {
-          e.preventDefault();
-          handleSubmit(e);
-        }}
       >
         Submit Booking
       </button>
