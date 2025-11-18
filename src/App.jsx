@@ -119,7 +119,7 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
   const passengerOptions = Array.from({ length: maxPassengers || 8 }, (_, i) => i + 1);
 
   // Submit
-  const handleSubmit = (e) => {
+ const handleSubmit = (e) => {
   e?.preventDefault?.();
   setTriedSubmit(true);
 
@@ -233,7 +233,6 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
     window.open(stripeLinks[boat].any, "_blank");
   }
 };
-
   // --------------- JSX ----------------
   return (
     <form onSubmit={handleSubmit} className="axis-form">
