@@ -1,4 +1,4 @@
-import { useState } from "react";
+ import { useState } from "react";
 import DatePicker from "react-datepicker";
 
 const initialInventory = { BlueWater170: [], Axopar22: [] };
@@ -120,67 +120,119 @@ Address: ${[info.country, info.address, info.city, info.state, info.zip].filter(
 
   // Submit
   const handleSubmit = (e) => {
-    e?.preventDefault?.();
-    setTriedSubmit(true);
-    console.log("handleSubmit fired");
+  e?.preventDefault?.();
+  setTriedSubmit(true);
 
-    const trim = (s) => (s || "").toString().trim();
-    const name  = trim(info.name);
-    const phone = trim(info.phone);
-    const email = trim(info.email);
-    const tFrom = trim(info.transferFrom);
-    const tTo   = trim(info.transferTo);
+  const trim = (s) => (s || "").toString().trim();
 
-    if (!boat)        { alert("Please choose a boat."); return; }
-    if (!bookingType) { alert("Please choose a booking type."); return; }
-    if (!date)        { alert("Please select a date."); return; }
-    if (!time)        { alert("Please select a time."); return; }
+  const name  = trim(info.name);
+  const phone = trim(info.phone);
+  const email = trim(info.email);
+  const tFrom = trim(info.transferFrom);
+  const tTo   = trim(info.transferTo);
 
-    if (boat === "Axopar" && !trim(departure)) {
-      alert("Please select a departure point for the Axopar 37XC."); return;
+  // Debug – proves the handler is actually firing on iPhone
+  console.log("SUBMIT PRESSED");
+
+  // 1) BASIC CHOICES
+  if (!boat) {
+    alert("Please choose a boat.");
+    return;
+  }
+
+  if (!bookingType) {
+    alert("Please choose a booking type.");
+    return;
+  }
+
+  if (!date) {
+    alert("Please select a date.");
+    return;
+  }
+
+  if (!time) {
+    alert("Please select a time.");
+    return;
+  }
+
+  if (boat === "Axopar" && !trim(departure)) {
+    alert("Please select a departure point for the Axopar 37XC.");
+    return;
+  }
+
+  // 2) CONTACT INFO – these SHOULD block you if empty
+  if (!name) {
+    alert("Please enter your full name.");
+    return;
+  }
+
+  if (!phone) {
+    alert("Please enter your phone number.");
+    return;
+  }
+
+  if (!email) {
+    alert("Please enter your email address.");
+    return;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  // 3) TERMS – this check comes AFTER the name/phone/email checks
+  if (!info.agreed) {
+    alert("You must agree to the Terms & Conditions before submitting.");
+    return;
+  }
+
+  // 4) TRANSFER FIELDS
+  if (bookingType === "Transfer") {
+    if (!tFrom) {
+      alert("Please enter the Transfer From location.");
+      return;
     }
-
-    if (!name)  { alert("Please enter your full name."); return; }
-    if (!phone) { alert("Please enter your phone number."); return; }
-    if (!email) { alert("Please enter your email address."); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert("Please enter a valid email address."); return;
+    if (!tTo) {
+      alert("Please enter the Transfer To location.");
+      return;
     }
+  }
 
-    if (!info.agreed) { alert("You must agree to the Terms & Conditions before submitting."); return; }
+  // 5) PASSENGERS LIMIT
+  if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
+    alert(`Maximum passengers for this boat is ${maxPassengers}.`);
+    return;
+  }
 
-    if (bookingType === "Transfer") {
-      if (!tFrom) { alert("Please enter the Transfer From location."); return; }
-      if (!tTo)   { alert("Please enter the Transfer To location."); return; }
-    }
+  // 6) AVAILABILITY FOR RENTALS
+  if (
+    bookingType !== "Transfer" &&
+    (boat === "BlueWater170" || boat === "Axopar22")
+  ) {
+    const assignedBoat = handleBooking();
+    if (!assignedBoat) return; // clash => handleBooking already alerted
+  }
 
-    if (parseInt(passengers, 10) > parseInt(maxPassengers || 8, 10)) {
-      alert(`Maximum passengers for this boat is ${maxPassengers}.`); return;
-    }
+  // 7) EMAIL + STRIPE
+  sendEmail();
+  alert("Booking submitted. Stripe will open in a new tab.");
 
-    if (bookingType !== "Transfer" && (boat === "BlueWater170" || boat === "Axopar22")) {
-      const assignedBoat = handleBooking();
-      if (!assignedBoat) return;
-    }
-
-    sendEmail();
-    alert("Booking submitted. Stripe will open in a new tab.");
-
-    const stripeLinks = {
-      Axopar: {
-        "Full Day Charter": "https://buy.stripe.com/bJecN44IZ6zac0G2ebak008",
-        "Half Day Charter": "https://buy.stripe.com/28EcN4grHcXyc0G8Czak009"
-      },
-      BlueWater170: { any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007" },
-      Axopar22:     { any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006" }
-    };
-
-    if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
-      window.open(stripeLinks[boat][bookingType], "_blank");
-    } else if (stripeLinks[boat]?.any) {
-      window.open(stripeLinks[boat].any, "_blank");
-    }
+  const stripeLinks = {
+    Axopar: {
+      "Full Day Charter": "https://buy.stripe.com/bJecN44IZ6zac0G2ebak008",
+      "Half Day Charter": "https://buy.stripe.com/28EcN4grHcXyc0G8Czak009"
+    },
+    BlueWater170: { any: "https://buy.stripe.com/3cI8wO5N3aPq5CiaKHak007" },
+    Axopar22:     { any: "https://buy.stripe.com/6oUbJ06R76za8Ouf0Xak006" }
   };
+
+  if (boat === "Axopar" && stripeLinks[boat][bookingType]) {
+    window.open(stripeLinks[boat][bookingType], "_blank");
+  } else if (stripeLinks[boat]?.any) {
+    window.open(stripeLinks[boat].any, "_blank");
+  }
+};
 
   // --------------- JSX ----------------
   return (
